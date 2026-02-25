@@ -1,7 +1,20 @@
 export interface Trip {
-  id?: number;
-  departureCity: string;
-  arrivalCity: string;
-  departureTime: string;
+  id: number;
+  departureCityName: string;
+  arrivalCityName: string;
+  companyName: string;
+  companyLogo?: string;
+  departureDateTime: string; // ISO String du LocalDateTime
   price: number;
+  availableSeats: number;
+  vehicleType: string;
+}
+
+// On prépare aussi l'interface pour l'envoi (Admin/Create)
+export interface TripRequest {
+  routeId: number;
+  vehicleId: number;
+  departureDateTime: string;
+  price: number;
+  availableSeats: number;
 }

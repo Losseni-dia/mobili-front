@@ -106,3 +106,17 @@ $mobili-yellow: #FFCC00;
         }
     }
 }
+
+// --- ADAPTATION DESKTOP ---
+@media (min-width: 768px) {
+    .dashboard-container {
+        padding: 40px;
+        max-width: 1200px;
+        margin: 0 auto; // Centre le dashboard sur grand écran
+    }
+
+    .horizontal-scroll {
+        flex-wrap: wrap; // Sur PC, on ne veut plus forcément scroller, on peut tout afficher
+        overflow-x: visible;
+    }
+}

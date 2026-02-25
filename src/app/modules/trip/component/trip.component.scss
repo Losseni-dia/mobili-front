@@ -1,28 +1,29 @@
-// Variables
+// Variables Mobili
 $mobili-blue: #092990;
 $mobili-yellow: #FFCC00;
 
 .trip-module {
     width: 100%;
-    padding: 16px; // Espacement standard sur mobile
+    padding: 16px;
     box-sizing: border-box;
 
+    // --- ZONE DE RECHERCHE ---
     .search-bar {
         background-color: $mobili-blue;
         padding: 20px;
         border-radius: 12px;
         display: flex;
-        flex-direction: column; // Empilé par défaut pour le pouce
+        flex-direction: column; // Empilé sur mobile
         gap: 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 
         input {
             width: 100%;
-            height: 50px; // Zone de frappe plus haute pour mobile
+            height: 50px;
             padding: 0 16px;
             border: 2px solid transparent;
             border-radius: 8px;
-            font-size: 16px; // Important : 16px min pour éviter le zoom auto sur iPhone
+            font-size: 16px; // Évite le zoom automatique sur iPhone
             outline: none;
 
             &:focus {
@@ -40,7 +41,6 @@ $mobili-yellow: #FFCC00;
             font-size: 1rem;
             cursor: pointer;
 
-            // Sur mobile, on remplace le :hover par :active (le clic)
             &:active {
                 background-color: darken($mobili-yellow, 10%);
                 transform: scale(0.98);
@@ -52,56 +52,123 @@ $mobili-yellow: #FFCC00;
         }
     }
 
+    // --- LISTE DES RÉSULTATS ---
     .results {
         margin-top: 24px;
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 16px;
 
         .card {
             background: white;
-            border-left: 6px solid $mobili-yellow;
+            border-radius: 12px;
             padding: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border-left: 6px solid $mobili-yellow; // Rappel visuel Mobili
 
-            .info-group {
+            // Header : Logo + Type de véhicule
+            .card-header {
                 display: flex;
-                flex-direction: column;
-                gap: 4px;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 12px;
+                font-size: 0.8rem;
 
-                .time {
-                    font-size: 0.85rem;
-                    color: #666;
+                .company {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+
+                    .logo {
+                        width: 24px;
+                        height: 24px;
+                        border-radius: 4px;
+                        object-fit: contain;
+                    }
+
+                    .name {
+                        font-weight: bold;
+                        color: #666;
+                    }
                 }
 
-                strong {
-                    font-size: 1rem;
+                .v-type {
                     color: $mobili-blue;
+                    font-weight: 600;
+                    background: rgba($mobili-blue, 0.05);
+                    padding: 2px 8px;
+                    border-radius: 4px;
                 }
             }
 
-            .price {
-                font-size: 1.25rem;
-                font-weight: 800;
-                color: $mobili-blue;
+            // Body : Heure + Trajet + Prix
+            .card-body {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+
+                .info-group {
+                    display: flex;
+                    flex-direction: column;
+
+                    .time {
+                        font-size: 1.3rem;
+                        font-weight: 800;
+                        color: $mobili-blue;
+                    }
+
+                    .route {
+                        font-size: 1rem;
+                        margin-top: 4px;
+                        color: #333;
+                    }
+                }
+
+                .price-group {
+                    text-align: right;
+
+                    .price {
+                        font-size: 1.6rem;
+                        font-weight: 900;
+                        color: $mobili-blue;
+                    }
+
+                    small {
+                        margin-left: 2px;
+                        font-weight: bold;
+                        color: $mobili-blue;
+                    }
+                }
+            }
+
+            // Footer : Places disponibles
+            .card-footer {
+                margin-top: 12px;
+                padding-top: 10px;
+                border-top: 1px dashed #eee;
+
+                .seats {
+                    font-size: 0.75rem;
+                    color: #28a745; // Vert par défaut
+
+                    &.urgent {
+                        color: #d32f2f; // Rouge si peu de places
+                        font-weight: bold;
+                    }
+                }
             }
         }
     }
 }
 
-// --- ADAPTATION DESKTOP (PC) ---
+// --- ADAPTATION DESKTOP (PC / Tablettes) ---
 @media (min-width: 768px) {
     .trip-module {
-        max-width: 900px;
+        max-width: 800px;
         margin: 2rem auto;
 
         .search-bar {
-            flex-direction: row; // On repasse en ligne sur PC
-            align-items: center;
+            flex-direction: row; // En ligne sur grand écran
             padding: 1.5rem;
 
             input {
