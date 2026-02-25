@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TripService } from './trip.service';
-import { Trip } from './trip.model';
+import { TripService } from '../service/trip.service';
+import { Trip } from '../model/trip.model';
 
 @Component({
   selector: 'app-trip',
