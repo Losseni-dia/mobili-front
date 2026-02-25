@@ -9,8 +9,8 @@ import { Vehicle } from '../vehicule/model/vehicle.model';
   selector: 'app-transport-dashboard',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './transport-dashboard.component.html',
-  styleUrls: ['./transport-dashboard.component.scss']
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.scss']
 })
 export class TransportDashboardComponent implements OnInit {
   private companyService = inject(CompanyService);
