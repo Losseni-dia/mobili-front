@@ -1,0 +1,15 @@
+<div class="trip-module">
+    <div class="search-bar">
+        <input [(ngModel)]="departure" placeholder="D'où partez-vous ?">
+        <input [(ngModel)]="arrival" placeholder="Où allez-vous ?">
+        <button (click)="find()" [disabled]="loading">RECHERCHER</button>
+    </div>
+
+    <div class="results" *ngIf="results.length > 0">
+        <div class="card" *ngFor="let t of results">
+            <span>{{ t.departureTime }}</span>
+            <strong>{{ t.departureCity }} ➔ {{ t.arrivalCity }}</strong>
+            <span class="price">{{ t.price }}€</span>
+        </div>
+    </div>
+</div>

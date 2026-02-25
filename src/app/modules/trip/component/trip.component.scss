@@ -1,0 +1,116 @@
+// Variables
+$mobili-blue: #092990;
+$mobili-yellow: #FFCC00;
+
+.trip-module {
+    width: 100%;
+    padding: 16px; // Espacement standard sur mobile
+    box-sizing: border-box;
+
+    .search-bar {
+        background-color: $mobili-blue;
+        padding: 20px;
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column; // Empilé par défaut pour le pouce
+        gap: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+        input {
+            width: 100%;
+            height: 50px; // Zone de frappe plus haute pour mobile
+            padding: 0 16px;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            font-size: 16px; // Important : 16px min pour éviter le zoom auto sur iPhone
+            outline: none;
+
+            &:focus {
+                border-color: $mobili-yellow;
+            }
+        }
+
+        button {
+            background-color: $mobili-yellow;
+            color: $mobili-blue;
+            height: 50px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+
+            // Sur mobile, on remplace le :hover par :active (le clic)
+            &:active {
+                background-color: darken($mobili-yellow, 10%);
+                transform: scale(0.98);
+            }
+
+            &:disabled {
+                opacity: 0.5;
+            }
+        }
+    }
+
+    .results {
+        margin-top: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+
+        .card {
+            background: white;
+            border-left: 6px solid $mobili-yellow;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
+            .info-group {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+
+                .time {
+                    font-size: 0.85rem;
+                    color: #666;
+                }
+
+                strong {
+                    font-size: 1rem;
+                    color: $mobili-blue;
+                }
+            }
+
+            .price {
+                font-size: 1.25rem;
+                font-weight: 800;
+                color: $mobili-blue;
+            }
+        }
+    }
+}
+
+// --- ADAPTATION DESKTOP (PC) ---
+@media (min-width: 768px) {
+    .trip-module {
+        max-width: 900px;
+        margin: 2rem auto;
+
+        .search-bar {
+            flex-direction: row; // On repasse en ligne sur PC
+            align-items: center;
+            padding: 1.5rem;
+
+            input {
+                flex: 1;
+            }
+
+            button {
+                padding: 0 2.5rem;
+            }
+        }
+    }
+}

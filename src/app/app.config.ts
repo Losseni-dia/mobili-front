@@ -3,7 +3,7 @@ import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http'; // Manquant !
 
 import { routes } from './app.routes';
-import { apiInterceptor } from './core/interceptors/api.interceptor'; // Manquant !
+import { apiInterceptor } from './configurations/interceptors/api.interceptor'; // Manquant !
 
 export const appConfig: ApplicationConfig = {
   providers: [
