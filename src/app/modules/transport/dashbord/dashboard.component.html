@@ -1,0 +1,35 @@
+<div class="dashboard-container">
+    <h2 class="title">Gestion Transport</h2>
+
+    <section class="section">
+        <h3>Compagnies partenaires</h3>
+        <div class="horizontal-scroll">
+            <div *ngFor="let c of companies" class="company-card" [class.active]="c.id === selectedCompanyId"
+                (click)="selectCompany(c.id!)">
+                <div class="logo-placeholder">{{ c.name.charAt(0) }}</div>
+                <span>{{ c.name }}</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" *ngIf="selectedCompanyId">
+        <h3>Véhicules de la flotte</h3>
+        <div class="vehicle-list">
+            <div class="no-data" *ngIf="selectedVehicles.length === 0 && !loading">
+                Aucun véhicule pour cette compagnie.
+            </div>
+
+            <div class="vehicle-item" *ngFor="let v of selectedVehicles">
+                <div class="v-info">
+                    <strong>{{ v.plateNumber }}</strong>
+                    <span>{{ v.model }} • {{ v.type }}</span>
+                </div>
+                <div class="v-status" [class.available]="v.available">
+                    {{ v.available ? 'Prêt' : 'En maintenance' }}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="loader" *ngIf="loading">Chargement...</div>
+</div>
