@@ -1,0 +1,116 @@
+// Variables de couleurs Mobili
+$mobili-blue: #092990;
+$mobili-yellow: #FFCC00;
+$text-light: #ffffff;
+$grey-light: #f4f4f4;
+
+.trip-module {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+
+    // Zone de recherche (Le Header)
+    .search-bar {
+        background-color: $mobili-blue;
+        padding: 2rem;
+        border-radius: 8px;
+        display: flex;
+        gap: 1rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+
+        input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            font-size: 1rem;
+            outline: none;
+
+            &:focus {
+                border-color: $mobili-yellow;
+            }
+        }
+
+        button {
+            background-color: $mobili-yellow;
+            color: $mobili-blue;
+            border: none;
+            padding: 0 2rem;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+
+            &:hover:not(:disabled) {
+                background-color: darken($mobili-yellow, 10%);
+                transform: translateY(-2px);
+            }
+
+            &:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
+        }
+    }
+
+    // Liste des résultats (Les Cards)
+    .results {
+        margin-top: 2rem;
+        display: grid;
+        gap: 1rem;
+
+        .card {
+            background: white;
+            border-left: 6px solid $mobili-yellow;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: hover 0.3s;
+
+            &:hover {
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            }
+
+            .info-group {
+                display: flex;
+                flex-direction: column;
+
+                .time {
+                    font-size: 0.9rem;
+                    color: #666;
+                }
+
+                strong {
+                    font-size: 1.1rem;
+                    color: $mobili-blue;
+                }
+            }
+
+            .price {
+                font-size: 1.4rem;
+                font-weight: bold;
+                color: $mobili-blue;
+
+                &::after {
+                    content: '€';
+                    font-size: 1rem;
+                    margin-left: 2px;
+                }
+            }
+        }
+    }
+}
+
+// Adaptabilité mobile
+@media (max-width: 600px) {
+    .search-bar {
+        flex-direction: column;
+
+        button {
+            padding: 1rem;
+        }
+    }
+}
