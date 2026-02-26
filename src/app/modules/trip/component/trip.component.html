@@ -25,44 +25,67 @@
         <div class="spinner"></div>
         <p>Recherche des meilleurs trajets...</p>
     </div>
+<div class="results" *ngIf="!loading && results && results.length > 0">
+    <div class="card" *ngFor="let t of results">
 
-    <div class="results" *ngIf="!loading && results && results.length > 0">
-        <div class="card" *ngFor="let t of results">
-            <div class="card-header">
-                <div class="company">
-                    <div class="logo-circle" *ngIf="!t.companyLogo">{{ t.companyName?.charAt(0) }}</div>
-                    <img *ngIf="t.companyLogo" [src]="t.companyLogo" class="logo" alt="Logo">
-                    <span class="name">{{ t.companyName }}</span>
+        <div class="card-header">
+            <div class="company">
+                <div class="logo-circle" *ngIf="!t.vehicle?.companyLogo">
+                    {{ t.vehicle?.companyName?.charAt(0) || 'M' }}
                 </div>
-                <span class="v-type">{{ t.vehicleType }}</span>
+                <img *ngIf="t.vehicle?.companyLogo" [src]="t.vehicle.companyLogo" class="logo" alt="Logo">
+                <span class="name">{{ t.vehicle?.companyName || 'Agence Mobili' }}</span>
             </div>
+            <span class="v-type">{{ t.vehicle?.type || 'Standard' }}</span>
+        </div>
 
-            <div class="card-body">
-                <div class="info-group">
+        <div class="card-body">
+            <div class="info-group">
+                <div class="time-container">
                     <span class="time">{{ t.departureDateTime | date:'HH:mm' }}</span>
-                    <strong class="route">
-                        {{ t.departureCityName }} ➔ {{ t.arrivalCityName }}
-                    </strong>
-                    <span class="full-date">{{ t.departureDateTime | date:'dd MMM yyyy' }}</span>
                 </div>
-                <div class="price-group">
-                    <span class="price">{{ t.price | number }}</span>
-                    <small>CFA</small>
-                </div>
+
+                <strong class="route">
+                    {{ t.route?.departureCity?.cityName }}
+                    <span class="arrow">➔</span>
+                    {{ t.route?.arrivalCity?.cityName }}
+                </strong>
+
+                <span class="full-date">{{ t.departureDateTime | date:'dd MMM yyyy' }}</span>
+
+                <small class="details" *ngIf="t.route?.distanceKm">
+                    {{ t.route?.distanceKm }} km
+                    <span *ngIf="t.route?.estimatedDurationMinutes">
+                        • approx. {{ t.route?.estimatedDurationMinutes }} min
+                    </span>
+                </small>
             </div>
 
-            <div class="card-footer">
-                <span class="seats" [class.urgent]="t.availableSeats < 5">
-                    {{ t.availableSeats }} places disponibles
-                </span>
-                <button class="btn-book">Réserver</button>
+            <div class="price-group">
+                <span class="price">{{ t.price | number }}</span>
+                <small>CFA</small>
             </div>
         </div>
-    </div>
 
-    <div class="no-results" *ngIf="!loading && hasSearched && results?.length === 0">
-        <div class="icon">🔍</div>
-        <p>Désolé, aucun trajet ne correspond à votre recherche pour le moment.</p>
-        <small>Essayez une autre date ou d'autres villes.</small>
+        <div class="card-footer">
+            <div class="meta-info">
+                <span class="seats" [class.urgent]="t.availableSeats < 5">
+                    <i class="icon-user"></i> {{ t.availableSeats }} places disponibles
+                </span>
+
+                <span class="status-badge" [attr.data-status]="t.status">
+                    {{
+                    t.status === 'SCHEDULED' ? 'Programmé' :
+                    t.status === 'ON_GOING' ? 'En cours' :
+                    t.status === 'COMPLETED' ? 'Terminé' :
+                    t.status === 'CANCELLED' ? 'Annulé' : t.status
+                    }}
+                </span>
+            </div>
+
+            <button class="btn-book" [disabled]="t.status !== 'SCHEDULED' || t.availableSeats === 0">
+                {{ t.availableSeats > 0 ? 'Réserver' : 'Complet' }}
+            </button>
+        </div>
     </div>
 </div>

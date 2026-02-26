@@ -242,6 +242,40 @@ $mobili-yellow: #FFCC00;
     }
 }
 
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    &[data-status="SCHEDULED"] {
+        background: #e3f2fd;
+        color: #1976d2;
+    }
+
+    &[data-status="ON_GOING"] {
+        background: #fff3e0;
+        color: #f57c00;
+    }
+
+    &[data-status="COMPLETED"] {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    &[data-status="CANCELLED"] {
+        background: #ffebee;
+        color: #c62828;
+    }
+}
+
+.btn-book:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
 @keyframes spin {
     0% {
         transform: rotate(0deg);

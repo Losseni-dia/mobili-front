@@ -4,10 +4,11 @@ export interface Trip {
   arrivalCityName: string;
   companyName: string;
   companyLogo?: string;
-  departureDateTime: string; // ISO String du LocalDateTime
+  departureDateTime: string; 
   price: number;
   availableSeats: number;
   vehicleType: string;
+  status: 'SCHEDULED' | 'ON_GOING' | 'COMPLETED' | 'CANCELLED'; // Ajout du statut
 }
 
 // On prépare aussi l'interface pour l'envoi (Admin/Create)
