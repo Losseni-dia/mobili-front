@@ -7,9 +7,23 @@ import { Trip } from '../model/trip.model';
 export class TripService {
   private http = inject(HttpClient);
 
-  search(from: string, to: string): Observable<Trip[]> {
-    const params = new HttpParams().set('from', from).set('to', to);
-    // L'intercepteur ajoutera l'URL de base devant '/trips'
-    return this.http.get<Trip[]>('/trips', { params });
+  // MÉTHODE 1 : Récupération globale (Appelée au chargement / ngOnInit)
+  // Correspond au @GetMapping dans ton Controller
+  findAll(): Observable<Trip[]> {
+    return this.http.get<Trip[]>('/trips');
+  }
+
+  // MÉTHODE 2 : Recherche filtrée (Appelée au clic sur le bouton)
+  // Correspond au @GetMapping("/search") dans ton Controller
+  search(departure: string, arrival: string, date?: string): Observable<Trip[]> {
+    let params = new HttpParams()
+      .set('departure', departure)
+      .set('arrival', arrival);
+
+    if (date) {
+      params = params.set('date', date);
+    }
+
+    return this.http.get<Trip[]>('/trips/search', { params });
   }
 }

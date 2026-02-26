@@ -1,15 +1,68 @@
 <div class="trip-module">
     <div class="search-bar">
-        <input [(ngModel)]="departure" placeholder="D'où partez-vous ?">
-        <input [(ngModel)]="arrival" placeholder="Où allez-vous ?">
-        <button (click)="find()" [disabled]="loading">RECHERCHER</button>
+        <div class="input-group">
+            <label>Départ</label>
+            <input [(ngModel)]="departure" name="departure" placeholder="D'où partez-vous ?">
+        </div>
+
+        <div class="input-group">
+            <label>Arrivée</label>
+            <input [(ngModel)]="arrival" name="arrival" placeholder="Où allez-vous ?">
+        </div>
+
+        <div class="input-group">
+            <label>Date</label>
+            <input type="date" [(ngModel)]="travelDate" name="travelDate">
+        </div>
+
+        <button (click)="find()" [disabled]="loading">
+            <span *ngIf="!loading">RECHERCHER</span>
+            <span *ngIf="loading">...</span>
+        </button>
     </div>
 
-    <div class="results" *ngIf="results.length > 0">
+    <div *ngIf="loading" class="loader">
+        <div class="spinner"></div>
+        <p>Recherche des meilleurs trajets...</p>
+    </div>
+
+    <div class="results" *ngIf="!loading && results && results.length > 0">
         <div class="card" *ngFor="let t of results">
-            <span>{{ t.departureTime }}</span>
-            <strong>{{ t.departureCity }} ➔ {{ t.arrivalCity }}</strong>
-            <span class="price">{{ t.price }}€</span>
+            <div class="card-header">
+                <div class="company">
+                    <div class="logo-circle" *ngIf="!t.companyLogo">{{ t.companyName?.charAt(0) }}</div>
+                    <img *ngIf="t.companyLogo" [src]="t.companyLogo" class="logo" alt="Logo">
+                    <span class="name">{{ t.companyName }}</span>
+                </div>
+                <span class="v-type">{{ t.vehicleType }}</span>
+            </div>
+
+            <div class="card-body">
+                <div class="info-group">
+                    <span class="time">{{ t.departureDateTime | date:'HH:mm' }}</span>
+                    <strong class="route">
+                        {{ t.departureCityName }} ➔ {{ t.arrivalCityName }}
+                    </strong>
+                    <span class="full-date">{{ t.departureDateTime | date:'dd MMM yyyy' }}</span>
+                </div>
+                <div class="price-group">
+                    <span class="price">{{ t.price | number }}</span>
+                    <small>CFA</small>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <span class="seats" [class.urgent]="t.availableSeats < 5">
+                    {{ t.availableSeats }} places disponibles
+                </span>
+                <button class="btn-book">Réserver</button>
+            </div>
         </div>
+    </div>
+
+    <div class="no-results" *ngIf="!loading && hasSearched && results?.length === 0">
+        <div class="icon">🔍</div>
+        <p>Désolé, aucun trajet ne correspond à votre recherche pour le moment.</p>
+        <small>Essayez une autre date ou d'autres villes.</small>
     </div>
 </div>

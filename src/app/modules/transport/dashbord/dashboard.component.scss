@@ -1,0 +1,151 @@
+@use "sass:color";
+
+
+$mobili-blue: #092990;
+$mobili-yellow: #FFCC00;
+
+
+.dashboard-container {
+    padding: 16px;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+
+    .title {
+        color: $mobili-blue;
+        margin-bottom: 24px;
+    }
+
+    h3 {
+        font-size: 1rem;
+        color: #555;
+        margin-bottom: 12px;
+    }
+
+    // Scroll horizontal pour les compagnies (très mobile-friendly)
+    .horizontal-scroll {
+        display: flex;
+        overflow-x: auto;
+        gap: 12px;
+        padding-bottom: 8px;
+        scrollbar-width: none; // Cache la scrollbar sur Firefox
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+                .header-row {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 12px;
+        
+                    .count {
+                        font-size: 0.8rem;
+                        background: #eee;
+                        padding: 2px 8px;
+                        border-radius: 10px;
+                        color: #666;
+                    }
+                }
+        
+                .empty-state {
+                    text-align: center;
+                    padding: 40px 20px;
+                    background: #fff;
+                    border: 2px dashed #eee;
+                    border-radius: 12px;
+                    color: #999;
+                    font-size: 0.9rem;
+                }
+
+        // Cache sur Chrome/Safari
+
+        .company-card {
+            min-width: 100px;
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 2px solid transparent;
+
+            &.active {
+                border-color: $mobili-yellow;
+                background: #fffdf5;
+            }
+
+            .logo-placeholder {
+                width: 40px;
+                height: 40px;
+                background: $mobili-blue;
+                color: white;
+                border-radius: 50%;
+                margin: 0 auto 8px;
+                line-height: 40px;
+                font-weight: bold;
+            }
+
+            span {
+                font-size: 0.85rem;
+                font-weight: 500;
+            }
+        }
+    }
+
+    .vehicle-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .vehicle-item {
+            background: white;
+            padding: 16px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            .v-info {
+                display: flex;
+                flex-direction: column;
+
+                strong {
+                    font-size: 1rem;
+                    color: $mobili-blue;
+                }
+
+                span {
+                    font-size: 0.8rem;
+                    color: #777;
+                }
+            }
+
+            .v-status {
+                font-size: 0.75rem;
+                padding: 4px 8px;
+                border-radius: 20px;
+                background: #ffebee;
+                color: #c62828;
+
+                &.available {
+                    background: #e8f5e9;
+                    color: #2e7d32;
+                }
+            }
+        }
+    }
+}
+
+// --- ADAPTATION DESKTOP ---
+@media (min-width: 768px) {
+    .dashboard-container {
+        padding: 40px;
+        max-width: 1200px;
+        margin: 0 auto; // Centre le dashboard sur grand écran
+    }
+
+    .horizontal-scroll {
+        flex-wrap: wrap; // Sur PC, on ne veut plus forcément scroller, on peut tout afficher
+        overflow-x: visible;
+    }
+}
