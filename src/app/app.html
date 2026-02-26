@@ -1,27 +1,14 @@
 <header class="header">
-  <div class="logo">MOBILI</div>
+  <a routerLink="/" class="logo">MOBILI</a>
 
   <nav class="nav-container">
-    <a routerLink="/transport-dashboard" class="link-society">Espace Société</a>
-
-    <button class="btn-account">
-      Mon Compte
-    </button>
+    <a routerLink="/transport-dashboard" routerLinkActive="active" class="link-society">
+      Espace Société
+    </a>
+    <button class="btn-account">Mon Compte</button>
   </nav>
 </header>
 
 <main>
-  <section class="hero-section">
-    <h2>Où partons-nous aujourd'hui ?</h2>
-    <p>Voyagez confortablement au meilleur prix.</p>
-  </section>
-
-  <div class="search-container">
-    <input type="text" placeholder="De : Ville de départ">
-    <input type="text" placeholder="À : Ville d'arrivée">
-    <button class="btn-search">RECHERCHER</button>
-  </div>
-
+  <router-outlet></router-outlet>
 </main>
-
-<router-outlet></router-outlet>

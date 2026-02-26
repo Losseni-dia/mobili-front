@@ -78,6 +78,27 @@ $mobili-blue: #092990;
     }
 }
 
+.link-society {
+    color: $mobili-blue;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.9rem;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer; // Force la souris en mode clic
+
+    &:hover {
+        background-color: rgba(9, 41, 144, 0.1); // Un léger fond bleu transparent
+        color: darken($mobili-blue, 10%);
+        transform: translateY(-1px); // Petit effet de levée
+    }
+
+    &:active {
+        transform: translateY(0); // Revient à la normale au clic
+    }
+}
+
 .hero-section {
     text-align: center;
     padding: 60px 20px;
@@ -135,6 +156,20 @@ $mobili-blue: #092990;
         &:hover {
             transform: scale(1.05);
             background-color: darken($mobili-blue, 10%);
+        }
+    }
+}
+
+.header {
+    .logo {
+        text-decoration: none; // Enlève le soulignement
+        color: inherit; // Garde la couleur définie (ton bleu ou blanc)
+        cursor: pointer; // Force l'affichage de la main au survol
+        font-weight: bold;
+        font-size: 1.5rem; // Ajuste selon tes besoins
+
+        &:hover {
+            opacity: 0.8; // Petit effet visuel au survol
         }
     }
 }

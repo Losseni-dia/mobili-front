@@ -1,5 +1,9 @@
+@use "sass:color";
+
+
 $mobili-blue: #092990;
 $mobili-yellow: #FFCC00;
+
 
 .dashboard-container {
     padding: 16px;
@@ -28,6 +32,31 @@ $mobili-yellow: #FFCC00;
         &::-webkit-scrollbar {
             display: none;
         }
+
+                .header-row {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 12px;
+        
+                    .count {
+                        font-size: 0.8rem;
+                        background: #eee;
+                        padding: 2px 8px;
+                        border-radius: 10px;
+                        color: #666;
+                    }
+                }
+        
+                .empty-state {
+                    text-align: center;
+                    padding: 40px 20px;
+                    background: #fff;
+                    border: 2px dashed #eee;
+                    border-radius: 12px;
+                    color: #999;
+                    font-size: 0.9rem;
+                }
 
         // Cache sur Chrome/Safari
 
