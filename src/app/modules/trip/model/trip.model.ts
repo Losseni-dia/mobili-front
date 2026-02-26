@@ -8,7 +8,7 @@ export interface Trip {
   price: number;
   availableSeats: number;
   vehicleType: string;
-  status: 'SCHEDULED' | 'ON_GOING' | 'COMPLETED' | 'CANCELLED'; // Ajout du statut
+  status: 'SCHEDULED' | 'ON_GOING' | 'COMPLETED' | 'CANCELLED';
 }
 
 // On prépare aussi l'interface pour l'envoi (Admin/Create)
