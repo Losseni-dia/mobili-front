@@ -4,11 +4,15 @@ import { Observable } from 'rxjs';
 import { Vehicle } from '../model/vehicle.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class VehicleService {
   private http = inject(HttpClient);
   private readonly ENDPOINT = '/vehicles';
+
+  getById(id: number): Observable<Vehicle> {
+    return this.http.get<Vehicle>(`${this.ENDPOINT}/${id}`);
+  }
 
   // Récupérer les véhicules d'une compagnie spécifique
   getByCompany(companyId: number): Observable<Vehicle[]> {
@@ -21,7 +25,17 @@ export class VehicleService {
   }
 
   // Créer un véhicule
-  create(vehicle: Vehicle): Observable<Vehicle> {
-    return this.http.post<Vehicle>(this.ENDPOINT, vehicle);
+  create(data: FormData): Observable<Vehicle> {
+    return this.http.post<Vehicle>(this.ENDPOINT, data);
+  }
+
+  // Optionnel : Mettre à jour avec image
+  update(id: number, data: FormData): Observable<Vehicle> {
+    return this.http.put<Vehicle>(`${this.ENDPOINT}/${id}`, data);
+  }
+
+  // Supprimer un véhicule
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.ENDPOINT}/${id}`);
   }
 }

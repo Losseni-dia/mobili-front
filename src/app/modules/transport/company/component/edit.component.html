@@ -1,0 +1,43 @@
+<div class="registration-container">
+    <h2>Modifier la Compagnie</h2>
+
+    <form [formGroup]="companyForm" (ngSubmit)="onSubmit()" class="mobili-form" *ngIf="companyForm">
+        <div class="form-grid">
+            <div class="input-group">
+                <label>Nom de la société</label>
+                <input formControlName="name">
+            </div>
+
+            <div class="input-group">
+                <label>Téléphone</label>
+                <input formControlName="phone">
+            </div>
+
+            <div class="input-group">
+                <label>Pays</label>
+                <input formControlName="country">
+            </div>
+
+            <div class="input-group">
+                <label>Numéro de registre (Business Number)</label>
+                <input formControlName="businessNumber">
+            </div>
+
+            <div class="input-group full-width">
+                <label>Logo de la compagnie (Laissez vide pour conserver l'actuel)</label>
+                <input type="file" (change)="onFileSelected($event)" accept="image/*">
+
+                <div class="preview">
+                    <img *ngIf="imagePreview" [src]="imagePreview" alt="Nouvel aperçu">
+
+                    <img *ngIf="!imagePreview && currentLogoUrl" [src]="'http://localhost:8080' + currentLogoUrl"
+                        alt="Logo actuel">
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" [disabled]="companyForm.invalid" class="btn-submit">
+            SAUVEGARDER LES MODIFICATIONS
+        </button>
+    </form>
+</div>

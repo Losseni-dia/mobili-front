@@ -1,27 +1,57 @@
 import { Component, inject, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { CompanyService } from '../company/service/company.service';
 import { VehicleService } from '../vehicule/service/vehicle.service';
+import { Company } from '../company/model/company.model';
 
 @Component({
   selector: 'app-transport-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  styleUrls: ['./dashboard.component.scss'],
 })
 export class TransportDashboardComponent implements OnInit {
   private companyService = inject(CompanyService);
   private vehicleService = inject(VehicleService);
   private cdr = inject(ChangeDetectorRef);
-  private zone = inject(NgZone); 
+  private zone = inject(NgZone);
 
   companies: any[] = [];
   selectedVehicles: any[] = [];
   selectedCompanyId: number | null = null;
+  selectedCompany: Company | null = null;
+
+  deselectCompany() {
+    this.selectedCompanyId = null;
+    this.selectedCompany = null;
+    this.selectedVehicles = [];
+  }
 
   ngOnInit() {
     this.loadCompanies();
+  }
+
+  // dashboard.component.ts
+  deleteVehicle(id: number) {
+    if (
+      confirm('Êtes-vous sûr de vouloir supprimer ce véhicule ? cette action est irréversible.')
+    ) {
+      this.vehicleService.delete(id).subscribe({
+        next: () => {
+          // Mise à jour locale de la liste pour faire disparaître le véhicule sans recharger la page
+          this.selectedVehicles = this.selectedVehicles.filter((v) => v.id !== id);
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Erreur lors de la suppression', err);
+          alert(
+            'Impossible de supprimer le véhicule car il est peut-être lié à des trajets en cours.',
+          );
+        },
+      });
+    }
   }
 
   loadCompanies() {
@@ -32,12 +62,13 @@ export class TransportDashboardComponent implements OnInit {
           this.cdr.detectChanges();
         });
       },
-      error: (err) => console.error('Erreur chargement compagnies', err)
+      error: (err) => console.error('Erreur chargement compagnies', err),
     });
   }
 
   selectCompany(id: number) {
     this.selectedCompanyId = id;
+    this.selectedCompany = this.companies.find((c) => c.id === id) || null;
     this.vehicleService.getByCompany(id).subscribe({
       next: (data) => {
         this.zone.run(() => {
@@ -45,7 +76,7 @@ export class TransportDashboardComponent implements OnInit {
           this.cdr.detectChanges();
         });
       },
-      error: (err) => console.error('Erreur chargement véhicules', err)
+      error: (err) => console.error('Erreur chargement véhicules', err),
     });
   }
 }

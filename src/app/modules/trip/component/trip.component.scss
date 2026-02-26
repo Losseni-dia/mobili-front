@@ -276,6 +276,28 @@ $mobili-yellow: #FFCC00;
     transform: none !important;
 }
 
+.admin-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+
+    .btn-outline {
+        background: transparent;
+        border: 2px solid $mobili-blue;
+        color: $mobili-blue;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+            background: $mobili-blue;
+            color: white;
+        }
+    }
+}
+
 @keyframes spin {
     0% {
         transform: rotate(0deg);

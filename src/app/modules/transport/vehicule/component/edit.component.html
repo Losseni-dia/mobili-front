@@ -1,0 +1,45 @@
+<div class="registration-container">
+    <h2>Modifier le Véhicule</h2>
+
+    <form [formGroup]="vehicleForm" (ngSubmit)="onSubmit()" class="mobili-form" *ngIf="vehicleForm">
+        <div class="form-grid">
+            <div class="input-group">
+                <label>Plaque d'immatriculation</label>
+                <input formControlName="plateNumber">
+            </div>
+
+            <div class="input-group">
+                <label>Modèle</label>
+                <input formControlName="model">
+            </div>
+
+            <div class="input-group">
+                <label>Capacité</label>
+                <input type="number" formControlName="capacity">
+            </div>
+
+            <div class="input-group">
+                <label>Type</label>
+                <select formControlName="type">
+                    <option *ngFor="let t of vehicleTypes" [value]="t">{{ t }}</option>
+                </select>
+            </div>
+
+            <div class="input-group full-width">
+                <label>Photo du véhicule (Laisser vide pour conserver l'actuelle)</label>
+                <input type="file" (change)="onFileSelected($event)" accept="image/*">
+
+                <div class="preview">
+                    <img *ngIf="imagePreview" [src]="imagePreview" alt="Nouvel aperçu">
+
+                    <img *ngIf="!imagePreview && currentImageUrl" [src]="'http://localhost:8080' + currentImageUrl"
+                        alt="Image actuelle">
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" [disabled]="vehicleForm.invalid" class="btn-submit">
+            METTRE À JOUR LE VÉHICULE
+        </button>
+    </form>
+</div>
