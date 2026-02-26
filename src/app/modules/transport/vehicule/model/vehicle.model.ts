@@ -5,6 +5,7 @@ export interface Vehicle {
     plateNumber: string;
     model: string;
     capacity: number;
+    imageUrl?: string;
     available: boolean;
     type: VehicleType; // Utilisation de l'Enum ici
     companyId: number;

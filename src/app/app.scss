@@ -1,175 +1,94 @@
+@use "sass:color";
+
 $mobili-yellow: #FFCC00;
 $mobili-blue: #092990;
 
 .header {
     background-color: $mobili-yellow;
-    padding: 15px 20px; // Réduit pour mobile
+    padding: 10px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    height: 70px; // On fixe une hauteur pour garantir l'alignement vertical
 
     .logo {
-        font-size: 1.5rem; // Un peu plus petit sur mobile
-        font-weight: 900;
+        text-decoration: none;
         color: $mobili-blue;
+        font-weight: 900;
+        font-size: 1.5rem;
         letter-spacing: -1px;
     }
 
     .nav-container {
         display: flex;
-        align-items: center;
-        gap: 15px; // Espace entre le lien et le bouton
+        align-items: center; // Aligne tout parfaitement sur la ligne
+        gap: 10px;
 
-        .link-society {
-            color: $mobili-blue;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 0.85rem;
-
-            &:active {
-                opacity: 0.7;
-            }
-        }
-    }
-
-    .btn-account {
-        color: $mobili-blue;
-        font-weight: bold;
-        background: none;
-        border: 2px solid $mobili-blue;
-        padding: 6px 12px;
-        border-radius: 8px;
-        font-size: 0.85rem;
-        cursor: pointer;
-    }
-}
-
-/* --- ADAPTATION DESKTOP --- */
-@media (min-width: 768px) {
-    .header {
-        padding: 20px 50px;
-
-        .logo {
-            font-size: 2rem;
-        }
-
-        .nav-container {
-            gap: 30px;
-
-            .link-society {
-                font-size: 1rem;
-
-                &:hover {
-                    text-decoration: underline;
-                }
-            }
-        }
-
+        // Style COMMUN pour tous les éléments cliquables du nav
+        .btn-link,
         .btn-account {
-            padding: 8px 18px;
-            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 40px; // Même hauteur pour tout le monde
+            padding: 0 15px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            white-space: nowrap; // Évite les retours à la ligne
+        }
+
+        
+
+        // Bouton "Devenir Partenaire"
+        .btn-link{
+            color: $mobili-blue;
+            border: 2px solid $mobili-blue;
+            background: transparent;
 
             &:hover {
                 background-color: $mobili-blue;
                 color: white;
             }
         }
-    }
-}
 
-.link-society {
-    color: $mobili-blue;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 0.9rem;
-    padding: 5px 10px;
-    border-radius: 5px;
-    transition: all 0.2s ease-in-out;
-    cursor: pointer; // Force la souris en mode clic
+        // Bouton "Mon Compte"
+        .btn-account {
+            background-color: $mobili-blue;
+            color: white;
+            border: none;
 
-    &:hover {
-        background-color: rgba(9, 41, 144, 0.1); // Un léger fond bleu transparent
-        color: darken($mobili-blue, 10%);
-        transform: translateY(-1px); // Petit effet de levée
-    }
-
-    &:active {
-        transform: translateY(0); // Revient à la normale au clic
-    }
-}
-
-.hero-section {
-    text-align: center;
-    padding: 60px 20px;
-
-    h2 {
-        font-size: 2.5rem;
-        color: $mobili-blue;
-        margin-bottom: 10px;
-        font-weight: 800;
-    }
-
-    p {
-        color: #555;
-        font-size: 1.1rem;
-    }
-}
-
-.search-container {
-    max-width: 800px;
-    margin: 0 auto;
-    background: white;
-    border: 5px solid $mobili-yellow;
-    padding: 30px;
-    border-radius: 25px;
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-    display: flex;
-    gap: 15px;
-
-    input {
-        flex: 1;
-        padding: 15px;
-        border: 1px solid #ddd;
-        border-radius: 12px;
-        font-size: 1rem;
-        outline: none;
-        color: $mobili-blue;
-
-        &:focus {
-            border-color: $mobili-blue;
-            box-shadow: 0 0 0 2px rgba(9, 41, 144, 0.1);
-        }
-    }
-
-    .btn-search {
-        background-color: $mobili-blue;
-        color: white;
-        border: none;
-        padding: 15px 30px;
-        border-radius: 12px;
-        font-weight: bold;
-        text-transform: uppercase;
-        cursor: pointer;
-        transition: transform 0.2s, background-color 0.2s;
-
-        &:hover {
-            transform: scale(1.05);
-            background-color: darken($mobili-blue, 10%);
+            &:hover {
+                background-color: color.adjust($mobili-blue, $lightness: -10%);
+            }
         }
     }
 }
 
-.header {
-    .logo {
-        text-decoration: none; // Enlève le soulignement
-        color: inherit; // Garde la couleur définie (ton bleu ou blanc)
-        cursor: pointer; // Force l'affichage de la main au survol
-        font-weight: bold;
-        font-size: 1.5rem; // Ajuste selon tes besoins
+/* --- ADAPTATION DESKTOP (Tablettes et PC) --- */
+@media (min-width: 768px) {
+    .header {
+        padding: 0 50px;
+        height: 85px;
 
-        &:hover {
-            opacity: 0.8; // Petit effet visuel au survol
+        .logo {
+            font-size: 2.2rem;
+        }
+
+        .nav-container {
+            gap: 20px;
+
+            
+            .btn-link,
+            .btn-account {
+                font-size: 0.95rem;
+                padding: 0 20px;
+                height: 45px;
+            }
         }
     }
 }
