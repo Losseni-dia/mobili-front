@@ -1,5 +1,5 @@
 @use "sass:color";
-@import '../styles.scss';
+@import '../../../styles.scss';
 
 .header {
     background-color: $mobili-yellow;
@@ -48,7 +48,6 @@
                 transition: all 0.2s ease-in-out;
                 text-align: center;
 
-                // Variantes par espace
                 &.admin {
                     color: $admin-purple;
                     border-color: $admin-purple;
@@ -64,7 +63,6 @@
                     border-color: $station-green;
                 }
 
-                // États actifs
                 &.active {
                     color: $white;
 
@@ -106,45 +104,128 @@
             }
         }
     }
+}
 
-    .actions {
-        display: flex;
-        align-items: center;
-        gap: 15px;
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 
-        .partner {
-            color: $mobili-blue;
-            font-size: 0.8rem;
-            font-weight: 700;
-            text-decoration: none;
-            border-bottom: 1px dashed $mobili-blue;
+    .user-welcome {
+        font-size: 0.9rem;
+        color: #2d3436;
+        display: none;
 
-            &:hover {
-                color: color.adjust($mobili-blue, $lightness: 20%);
-            }
+        @media (min-width: 768px) {
+            display: block;
         }
 
-        .btn-account {
-            background-color: $mobili-blue;
-            color: $white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-weight: 800;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s;
+        strong {
+            font-weight: 700;
+        }
+    }
 
-            &:hover {
-                transform: translateY(-2px);
-                background-color: color.adjust($mobili-blue, $lightness: -10%);
-                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-            }
+    .btn-account {
+        background-color: $mobili-blue;
+        color: $white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: 800;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s;
+
+        &:hover {
+            transform: translateY(-2px);
+            background-color: color.adjust($mobili-blue, $lightness: -10%);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+    }
+
+    .link-auth {
+        text-decoration: none;
+        color: #2d3436;
+        font-weight: 600;
+
+        &:hover {
+            color: $mobili-blue;
+        }
+    }
+
+    .btn-register {
+        background-color: #2d3436;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+
+        &:hover {
+            opacity: 0.9;
+        }
+    }
+
+    .btn-logout {
+        background: none;
+        border: 1px solid #dfe6e9;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.8rem;
+
+        &:hover {
+            background-color: #fff5f5;
+            color: #d63031;
+            border-color: #ff7675;
         }
     }
 }
 
-// Mobile First - Adaptabilité
+.user-profile-nav {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    .avatar-wrapper {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 2px solid $white;
+        background-color: $mobili-blue;
+        cursor: pointer;
+        transition: transform 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover {
+            transform: scale(1.1);
+        }
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .header-initials {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+    }
+}
+
 @media (max-width: 1024px) {
     .header {
         flex-direction: column;
@@ -166,7 +247,7 @@
                 border-right: none;
                 border-bottom: 1px solid rgba($mobili-blue, 0.1);
                 padding: 10px;
-                width: 45%; // Deux groupes par ligne sur tablette
+                width: 45%;
             }
         }
 
@@ -179,8 +260,18 @@
     }
 }
 
-@media (max-width: 480px) {
-    .header .nav-container .nav-group {
-        width: 100%; // Un groupe par ligne sur petit mobile
+.btn-link.register-partner {
+    color: $mobili-blue; // Changé de jaune à bleu pour la lisibilité
+    border: 1.5px dashed $mobili-blue; // Bordure en pointillé bleue
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    background: rgba($mobili-yellow, 0.4); // Un léger fond blanc transparent pour le faire ressortir
+
+    &:hover {
+        background: $white;
+        border-style: solid;
+        transform: scale(1.05);
     }
 }

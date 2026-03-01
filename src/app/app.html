@@ -1,12 +1,5 @@
-<header class="header">
-  <a routerLink="/" class="logo">MOBILI</a>
-  <nav class="nav-container">
-    <a routerLink="/register-company" class="btn-link">Devenir Partenaire</a>
-    <a routerLink="/transport-dashboard" routerLinkActive="active" class="btn-link">Espace Société</a>
-    <button class="btn-account">Mon Compte</button>
-  </nav>
-</header>
-
-<main class="container">
-  <router-outlet></router-outlet>
+<app-header></app-header>
+<main>
+    <router-outlet></router-outlet>
 </main>
+<app-footer></app-footer>

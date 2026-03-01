@@ -1,0 +1,46 @@
+<div class="results-page">
+  <div class="search-info">
+    <h2>{{ searchParams.from }} → {{ searchParams.to }}</h2>
+    <p>{{ searchParams.date | date:'fullDate' }}</p>
+  </div>
+
+  <div class="trips-list">
+    <div class="empty-state" *ngIf="trips.length === 0">
+      <p>Aucun trajet trouvé pour cette date. 🚌</p>
+    </div>
+
+    <div class="trip-card" *ngFor="let trip of trips">
+      <div class="trip-main">
+        <div class="time-box">
+          <span class="time">{{ trip.departureTime }}</span>
+          <span class="city">{{ searchParams.from }}</span>
+        </div>
+        
+        <div class="duration-indicator">
+          <div class="line"></div>
+          <span class="icon">🚌</span>
+        </div>
+
+        <div class="time-box">
+          <span class="time">{{ trip.arrivalTime }}</span>
+          <span class="city">{{ searchParams.to }}</span>
+        </div>
+      </div>
+
+      <div class="trip-details">
+        <div class="partner">
+          <strong>{{ trip.partnerName }}</strong>
+          <span>{{ trip.vehicleType }}</span>
+        </div>
+        <div class="pricing">
+          <span class="seats" [class.low]="trip.seatsLeft < 5">
+            {{ trip.seatsLeft }} places restantes
+          </span>
+          <span class="price">{{ trip.price | number }} FCFA</span>
+        </div>
+      </div>
+      
+      <button class="btn-book">Réserver</button>
+    </div>
+  </div>
+</div>

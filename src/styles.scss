@@ -1,13 +1,20 @@
-/* Un bleu plus clair et dynamique */
-$mobili-yellow: #FFCC00;
-$mobili-blue: #092990;
-/* On passe de #003366 à #0066CC */
-$white: #ffffff;
+@import 'app/styles/variables';
 
-body {
+// Reset de base
+* {
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background-color: $white;
-    color: $mobili-blue;
+    box-sizing: border-box;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+body {
+    background-color: $gray-light;
+    color: $text-dark;
+}
+
+.container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
 }

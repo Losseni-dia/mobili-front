@@ -1,0 +1,112 @@
+@import '../../../../styles.scss'; // Pour récupérer tes variables $mobili-blue, etc.
+
+.register-container {
+    padding: 60px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f8fafb;
+    min-height: calc(100vh - 80px);
+
+    .register-card {
+        background: white;
+        padding: 40px;
+        border-radius: 24px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+        width: 100%;
+        max-width: 500px;
+
+        h2 {
+            color: $mobili-blue;
+            font-weight: 800;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        p {
+            color: #666;
+            text-align: center;
+            margin-bottom: 35px;
+            font-size: 0.95rem;
+        }
+    }
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    .field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: $mobili-blue;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input {
+            padding: 14px 18px;
+            border: 2px solid #f0f0f0;
+            border-radius: 14px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+
+            &:focus {
+                outline: none;
+                border-color: $mobili-blue;
+                background: #fff;
+                box-shadow: 0 0 0 4px rgba($mobili-blue, 0.05);
+            }
+
+            &::placeholder {
+                color: #ccc;
+            }
+        }
+
+        .file-input {
+            padding: 10px;
+            border: 2px dashed #e0e0e0;
+            background: #fafafa;
+            cursor: pointer;
+
+            &:hover {
+                border-color: $mobili-yellow;
+            }
+        }
+    }
+
+    .actions {
+        margin-top: 15px;
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: $mobili-blue;
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+
+            &:hover:not(:disabled) {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 20px rgba($mobili-blue, 0.2);
+            }
+
+            &:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+                filter: grayscale(0.5);
+            }
+        }
+    }
+}

@@ -1,0 +1,303 @@
+@use "sass:color";
+@import "../../../../styles.scss";
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+    padding: 1.5rem 1rem;
+}
+
+.login-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.07);
+    width: 100%;
+    max-width: 480px;
+
+    @media (min-width: 768px) {
+        padding: 2.5rem;
+    }
+
+    .login-header {
+        text-align: center;
+        margin-bottom: 2rem;
+
+        h2 {
+            color: #2d3436;
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        p {
+            color: #636e72;
+            font-size: 0.9rem;
+        }
+    }
+}
+
+/* --- SECTION AVATAR (PHOTO DE PROFIL) --- */
+.avatar-selection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+
+    .avatar-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .preview-circle {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border: 3px solid #f1c40f;
+        background-color: #f1f3f5;
+        overflow: hidden;
+        overflow: hidden; // ESSENTIEL pour le zoom
+            position: relative;
+        
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.1s ease-out; // Animation fluide du zoom
+            }
+        }
+        
+        .zoom-control {
+            width: 100%;
+            max-width: 200px;
+            margin-top: 10px;
+            text-align: center;
+        
+            label {
+                font-size: 0.7rem;
+                color: #636e72;
+                text-transform: none;
+                letter-spacing: 0;
+                margin-bottom: 4px;
+            }
+        
+            input[type="range"] {
+                width: 100%;
+                accent-color: #f1c40f; // Ton jaune Mobili
+                cursor: pointer;
+            }
+        }
+
+    .btn-upload {
+        background: white;
+        border: 1px dashed #b2bec3;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        color: #636e72;
+        cursor: pointer;
+
+        &:hover {
+            background-color: #fffdf0;
+            border-color: #f1c40f;
+        }
+    }
+
+        .initials-avatar {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #007bff; // La couleur Mobili
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            user-select: none;
+        }
+}
+
+/* --- STRUCTURE DU FORMULAIRE --- */
+.form-row {
+    display: flex;
+    flex-direction: column;
+
+    @media (min-width: 480px) {
+        flex-direction: row;
+        gap: 1rem;
+
+        .form-group {
+            flex: 1;
+        }
+    }
+}
+
+.form-group {
+    margin-bottom: 1.2rem;
+
+    label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #2d3436;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #f1f3f5;
+        border-radius: 12px;
+        font-size: 16px; // Évite le zoom auto sur iPhone
+        transition: all 0.2s ease-in-out;
+
+        &::placeholder {
+            color: #b2bec3;
+        }
+
+        &:focus {
+            border-color: #f1c40f;
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(241, 196, 15, 0.1);
+            outline: none;
+        }
+    }
+}
+
+/* --- CHAMPS AVEC ICÔNE OEIL --- */
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+
+    input {
+        padding-right: 48px;
+    }
+
+    .eye-icon {
+        position: absolute;
+        right: 12px;
+        background: none;
+        border: none;
+        padding: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #b2bec3;
+        transition: color 0.2s;
+        z-index: 2;
+        font-size: 1.2rem;
+            line-height: 1;
+        
+            span {
+                font-size: inherit; // Elle héritera du 1.2rem du parent
+                display: block;
+            }
+
+        &:hover {
+            color: #2d3436;
+        }
+
+        &:focus {
+            outline: none;
+        }
+
+        span {
+            font-size: 1.2rem;
+        }
+    }
+}
+
+/* --- BOUTON ET ERREURS --- */
+.btn-submit {
+    width: 100%;
+    padding: 16px;
+    background-color: #f1c40f;
+    border: none;
+    border-radius: 12px;
+    color: #2d3436;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: all 0.3s ease;
+
+    &:hover:not(:disabled) {
+        background-color: #e1b100;
+        transform: translateY(-2px);
+    }
+
+    &:active {
+        transform: scale(0.98);
+    }
+
+    &:disabled {
+        background-color: #dfe6e9;
+        color: #b2bec3;
+        cursor: not-allowed;
+    }
+}
+
+.error-banner {
+    background-color: #fff5f5;
+    border-left: 4px solid #ff7675;
+    color: #d63031;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.text-error {
+    color: #d63031;
+    font-size: 0.75rem;
+    margin-top: 4px;
+    display: block;
+    font-weight: 500;
+}
+
+.login-footer {
+    margin-top: 2rem;
+    text-align: center;
+    padding-top: 1.5rem;
+    border-top: 1px solid #f1f3f5;
+    font-size: 0.9rem;
+    color: #636e72;
+
+    a {
+        color: #f1c40f;
+        font-weight: 700;
+        text-decoration: none;
+        margin-left: 5px;
+    }
+}
+
+/* --- ANIMATION LOADER --- */
+.loader {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #2d3436;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
