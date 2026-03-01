@@ -3,7 +3,7 @@ import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http'; // Manquant !
 
 import { routes } from './app.routes';
-import { apiInterceptor } from './configurations/interceptors/api.interceptor'; // Manquant !
+import { apiInterceptor } from './core/interceptors/api.interceptor'; // Manquant !
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -12,7 +12,7 @@ export const appConfig: ApplicationConfig = {
 
     // C'est ICI que l'application devient sérieuse
     provideHttpClient(
-      withInterceptors([apiInterceptor]) // On lie ton travail sur l'API ici
-    )
-  ]
+      withInterceptors([apiInterceptor]), // On lie ton travail sur l'API ici
+    ),
+  ],
 };

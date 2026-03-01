@@ -1,0 +1,50 @@
+<header class="header">
+    <a routerLink="/" class="logo">MOBILI</a>
+
+    <nav class="nav-container">
+        @if (authService.isLoggedIn()) {
+        <div class="nav-group">
+            @if (authService.hasRole('ROLE_PARTNER')) {
+            <a routerLink="/partenaire/dashboard" routerLinkActive="active" class="btn-link company">Partenaire</a>
+            <div class="sub-nav">
+                <a routerLink="/partenaire/trips" class="sub-link">Mes Voyages</a>
+                <a routerLink="/partenaire/add-trip" class="sub-link">Publier un trajet</a>
+            </div>
+            }
+            @else {
+            <a routerLink="/partenaire/register" class="btn-link register-partner">Devenir Partenaire</a>
+            }
+        </div>
+
+        <div class="nav-group">
+            <a routerLink="/gare" routerLinkActive="active" class="btn-link station">Gare</a>
+        </div>
+        }
+    </nav>
+
+    <div class="actions">
+        @if (authService.isLoggedIn()) {
+        <div class="user-profile-nav">
+            <span class="user-welcome">Salut, <strong>{{ authService.currentUser()?.firstname }}</strong></span>
+
+            <div class="avatar-wrapper" routerLink="/my-account/profile">
+                @let avatar = getAvatarUrl(authService.currentUser()?.avatarUrl);
+
+                @if (avatar) {
+                <img [src]="avatar" alt="Profil" draggable="false">
+                } @else {
+                <div class="header-initials">
+                    {{ getInitials(authService.currentUser()?.firstname, authService.currentUser()?.lastname) }}
+                </div>
+                }
+            </div>
+
+            <button class="btn-account" routerLink="/my-account/profile">Mon Compte</button>
+            <button class="btn-logout" (click)="logout()">Déconnexion</button>
+        </div>
+        } @else {
+        <a routerLink="/auth/login" class="link-auth">Connexion</a>
+        <button class="btn-register" routerLink="/auth/register">S'inscrire</button>
+        }
+    </div>
+</header>

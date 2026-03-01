@@ -1,0 +1,35 @@
+<div class="profile-container">
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="profile-avatar-container">
+                @let avatar = getAvatarUrl(authService.currentUser()?.avatarUrl);
+
+                @if (avatar) {
+                <img [src]="avatar" class="profile-img" alt="Photo de profil">
+                } @else {
+                <div class="profile-initials">
+                    {{ (authService.currentUser()?.firstname?.[0] || '') +
+                    (authService.currentUser()?.lastname?.[0] || '') }}
+                </div>
+                }
+            </div>
+            <h2>{{ authService.currentUser()?.firstname }} {{ authService.currentUser()?.lastname }}</h2>
+            <span class="role-badge">{{ authService.currentUser()?.roles?.[0] }}</span>
+        </div>
+
+        <div class="profile-body">
+            <div class="info-row">
+                <label>Nom d'utilisateur</label>
+                <p>{{ authService.currentUser()?.login }}</p>
+            </div>
+            <div class="info-row">
+                <label>Email</label>
+                <p>{{ authService.currentUser()?.email || 'Non renseigné' }}</p>
+            </div>
+        </div>
+
+        <div class="profile-footer">
+            <button class="btn-edit">Modifier mes informations</button>
+        </div>
+    </div>
+</div>

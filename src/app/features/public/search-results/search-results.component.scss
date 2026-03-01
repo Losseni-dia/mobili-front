@@ -1,0 +1,140 @@
+@import '../../../../styles.scss';
+
+.results-page {
+    padding: 20px;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+
+    .search-info {
+        text-align: center;
+        margin-bottom: 30px;
+
+        h2 {
+            color: $mobili-blue;
+            font-weight: 900;
+            text-transform: capitalize;
+        }
+
+        p {
+            color: #666;
+            font-weight: 600;
+        }
+    }
+}
+
+.trips-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.trip-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eee;
+
+    .trip-main {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+
+        .time-box {
+            display: flex;
+            flex-direction: column;
+
+            .time {
+                font-size: 1.4rem;
+                font-weight: 900;
+                color: $text-dark;
+            }
+
+            .city {
+                font-size: 0.8rem;
+                color: #888;
+                text-transform: uppercase;
+            }
+        }
+
+        .duration-indicator {
+            flex: 1;
+            margin: 0 20px;
+            position: relative;
+
+            .line {
+                height: 2px;
+                background: #ddd;
+                width: 100%;
+            }
+
+            .icon {
+                position: absolute;
+                top: -12px;
+                left: 45%;
+                background: white;
+                padding: 0 5px;
+            }
+        }
+    }
+
+    .trip-details {
+        display: flex;
+        justify-content: space-between;
+        padding: 15px 0;
+        border-top: 1px dashed #eee;
+
+        .partner {
+            strong {
+                display: block;
+                color: $mobili-blue;
+            }
+
+            span {
+                font-size: 0.75rem;
+                color: #999;
+            }
+        }
+
+        .pricing {
+            text-align: right;
+
+            .seats {
+                display: block;
+                font-size: 0.8rem;
+                color: $station-green;
+                font-weight: bold;
+            }
+
+            .seats.low {
+                color: #e63946;
+            }
+
+            .price {
+                font-size: 1.2rem;
+                font-weight: 900;
+                color: $mobili-blue;
+            }
+        }
+    }
+
+    .btn-book {
+        width: 100%;
+        background: $mobili-blue;
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 10px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: 0.3s;
+
+        &:hover {
+            background: $mobili-yellow;
+            color: $mobili-blue;
+        }
+    }
+}

@@ -1,0 +1,68 @@
+@import '../../../styles.scss';
+
+.main-footer {
+    background-color: $white;
+    border-top: 1px solid #eee;
+    margin-top: auto; // Pousse le footer vers le bas
+
+    .quick-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        padding: 40px 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+
+        .info-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 12px;
+
+            .icon {
+                font-size: 1.5rem;
+            }
+
+            .text {
+                display: flex;
+                flex-direction: column;
+
+                strong {
+                    color: $mobili-blue;
+                    font-size: 0.9rem;
+                }
+
+                span {
+                    color: #666;
+                    font-size: 0.75rem;
+                }
+            }
+        }
+    }
+
+    .footer-bottom {
+        background-color: #f3f4f6;
+        padding: 20px;
+        text-align: center;
+        font-size: 0.8rem;
+        color: #999;
+
+        .footer-links {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+
+            a {
+                color: #666;
+                text-decoration: none;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,118 @@
+<div class="home-page">
+    <section class="hero">
+        <div class="search-card">
+            <form class="search-form" [formGroup]="searchForm">
+                <div class="input-block">
+                    <label>Départ</label>
+                    <input type="text" formControlName="departure" placeholder="D'où partez-vous ?">
+                </div>
+
+                <div class="input-block">
+                    <label>Arrivée</label>
+                    <input type="text" formControlName="arrival" placeholder="Où allez-vous ?">
+                </div>
+
+                <div class="input-block">
+                    <label>Date</label>
+                    <input type="date" formControlName="date">
+                </div>
+
+                <button type="button" (click)="applyFilter()" class="btn-main">Rechercher</button>
+            </form>
+        </div>
+    </section>
+
+    <section class="trips-section container">
+        <h2>Trajets disponibles ({{ filteredTrips.length }})</h2>
+        <div class="trips-grid">
+            <div class="trip-card" *ngFor="let trip of filteredTrips">
+                <div class="trip-image">
+                    <img *ngIf="trip.vehicleImageUrl; else noPhoto" [src]="IMAGE_BASE_URL + trip.vehicleImageUrl"
+                        (error)="$any($event.target).src = 'assets/images/default-vehicle.png'" alt="Véhicule">
+                    <ng-template #noPhoto>
+                        <div class="placeholder-img">🚌</div>
+                    </ng-template>
+                </div>
+
+                <div class="trip-details">
+                    <div class="route-header">
+                        <span class="city">{{ trip.departureCity }}</span>
+                        <span class="arrow">➔</span>
+                        <span class="city">{{ trip.arrivalCity }}</span>
+                    </div>
+
+                    <div class="time-info">
+                        📅 {{ trip.departureDateTime | date:'dd MMM' }} à
+                        <strong>{{ trip.departureDateTime | date:'HH:mm' }}</strong>
+                    </div>
+
+                    <div class="boarding-info" *ngIf="trip.boardingPoint">
+                        <span class="pin-icon">📍</span>
+                        Embarquement : <strong>{{ trip.boardingPoint }}</strong>
+                    </div>
+
+                    <div *ngIf="trip.moreInfo" class="stops-container">
+                        <span class="stop-badge" *ngFor="let stop of trip.moreInfo.split(',')">
+                            {{ stop.trim() }}
+                        </span>
+                    </div>
+
+                    <div class="partner-info">
+                        <span class="vehicle-type">{{ trip.vehicleType }}</span>
+                        <span class="dot">•</span>
+                        <span class="company">{{ trip.partnerName }}</span>
+                    </div>
+                </div>
+
+                <div class="trip-action">
+                    <div class="price-tag">{{ trip.price | number }} <span>FCFA</span></div>
+                    <div class="seats-left" [class.low]="trip.availableSeats < 5">
+                        {{ trip.availableSeats }} places restantes
+                    </div>
+                    <button class="btn-book" (click)="openBooking(trip)">Réserver</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="no-results" *ngIf="filteredTrips.length === 0">
+            <p>Aucun voyage ne correspond à votre recherche. 🚌</p>
+            <button class="btn-reset" (click)="resetFilter()">Voir tous les voyages</button>
+        </div>
+    </section>
+</div>
+<div class="booking-modal-overlay" *ngIf="selectedTrip" (click)="closeBooking()">
+    <div class="booking-modal" (click)="$event.stopPropagation()">
+        <button class="btn-close" (click)="closeBooking()">✕</button>
+
+        <h3>Réserver mon voyage</h3>
+
+        <div class="modal-summary">
+            <p><strong>{{ selectedTrip.departureCity }} ➔ {{ selectedTrip.arrivalCity }}</strong></p>
+            <p>📅 {{ selectedTrip.departureDateTime | date:'dd/MM/yyyy HH:mm' }}</p>
+            <p class="modal-price">{{ selectedTrip.price | number }} FCFA / place</p>
+        </div>
+
+        <div class="booking-form">
+            <label>Nombre de places</label>
+            <input type="number" [(ngModel)]="bookingSeats" (change)="onSeatsChange()" min="1"
+                [max]="selectedTrip.availableSeats">
+
+            <div class="passengers-list">
+                <label>Noms des passagers</label>
+                <div *ngFor="let name of passengerNames; let i = index; trackBy: trackByIndex" class="passenger-input-group">
+                    <span>Passager {{ i + 1 }}</span>
+                    <input type="text" [(ngModel)]="passengerNames[i]" placeholder="Nom complet du passager">
+                </div>
+            </div>
+
+            <div class="total-box">
+                <span>Total :</span>
+                <strong>{{ (selectedTrip.price * bookingSeats) | number }} FCFA</strong>
+            </div>
+
+            <button class="btn-confirm" (click)="confirmBooking()">
+                Valider la réservation
+            </button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,364 @@
+@use "sass:color";
+@import '../../../../styles.scss';
+
+// Variables de support
+$shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.05);
+$shadow-hover: 0 12px 30px rgba(0, 0, 0, 0.12);
+
+.home-page {
+    min-height: 100vh;
+    background-color: #fcfcfc;
+
+    .hero {
+        background: linear-gradient(to bottom, $mobili-yellow 0%, #fff 100%);
+        padding: 60px 20px;
+        text-align: center;
+    }
+}
+
+.search-card {
+    background: white;
+    padding: 24px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    max-width: 500px;
+    margin: -40px auto 0;
+    position: relative;
+    z-index: 10;
+
+    .search-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+
+        .input-block {
+            label {
+                display: block;
+                font-size: 0.75rem;
+                font-weight: 800;
+                color: $mobili-blue;
+                margin-bottom: 6px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            input {
+                width: 100%;
+                padding: 14px;
+                border: 2px solid #f0f0f0;
+                border-radius: 12px;
+                font-size: 1rem;
+                transition: all 0.2s;
+
+                &:focus {
+                    outline: none;
+                    border-color: $mobili-yellow;
+                    background-color: #fff;
+                }
+            }
+        }
+
+        .btn-main {
+            background: $mobili-blue;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+
+            &:hover {
+                background: darken($mobili-blue, 5%);
+                transform: scale(1.02);
+            }
+        }
+    }
+}
+
+.trips-section {
+    padding: 60px 20px;
+    max-width: 850px;
+    margin: 0 auto;
+
+    h2 {
+        color: $mobili-blue;
+        margin-bottom: 30px;
+        font-size: 1.5rem;
+        font-weight: 900;
+    }
+
+    .trips-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .trip-card {
+        background: white;
+        border-radius: 18px;
+        display: grid;
+        grid-template-columns: 140px 1fr 180px;
+        overflow: hidden;
+        border: 1px solid #f0f0f0;
+        box-shadow: $shadow-soft;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+        &:hover {
+            transform: translateY(-4px);
+            box-shadow: $shadow-hover;
+            border-color: $mobili-yellow;
+
+            .trip-image img {
+                transform: scale(1.08);
+            }
+        }
+
+        .trip-image {
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            overflow: hidden;
+
+            img {
+                width: 100%;
+                height: auto;
+                max-height: 100%;
+                object-fit: contain;
+                transition: transform 0.3s ease;
+            }
+        }
+
+        .trip-details {
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 8px;
+
+            .route-header {
+                font-size: 1.25rem;
+                font-weight: 900;
+                color: $mobili-blue;
+                display: flex;
+                align-items: center;
+
+                .arrow {
+                    color: $mobili-yellow;
+                    margin: 0 10px;
+                }
+            }
+
+            .time-info {
+                font-size: 0.9rem;
+                color: #555;
+                font-weight: 600;
+            }
+
+            .boarding-info {
+                font-size: 0.85rem;
+                color: $mobili-blue;
+                background: rgba($mobili-yellow, 0.15);
+                padding: 6px 12px;
+                border-radius: 8px;
+                display: inline-block;
+                width: fit-content;
+                margin: 4px 0;
+                border-left: 3px solid $mobili-yellow;
+
+                strong { font-weight: 800; color: darken($mobili-blue, 10%); }
+            }
+
+            .stops-container {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                margin-top: 5px;
+
+                &::before {
+                    content: "Passant par :";
+                    display: block;
+                    width: 100%;
+                    font-size: 0.65rem;
+                    color: #999;
+                    text-transform: uppercase;
+                    margin-bottom: 2px;
+                }
+
+                .stop-badge {
+                    background: rgba($mobili-blue, 0.04);
+                    color: $mobili-blue;
+                    padding: 3px 10px;
+                    border-radius: 6px;
+                    font-size: 0.7rem;
+                    font-weight: 700;
+                    border: 1px solid rgba($mobili-blue, 0.01);
+                }
+            }
+
+            .partner-info {
+                font-size: 0.8rem;
+                color: #777;
+                margin-top: 4px;
+                .company { color: #333; font-weight: 700; }
+            }
+        }
+
+        .trip-action {
+            padding: 24px;
+            background: #fafafa;
+            border-left: 2px dashed #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            .price-tag {
+                margin-bottom: 6px;
+                font-size: 1.5rem;
+                font-weight: 900;
+                color: $mobili-blue;
+                span { font-size: 0.75rem; font-weight: 700; margin-left: 3px; }
+            }
+
+            .seats-left {
+                font-size: 0.75rem;
+                font-weight: 700;
+                color: $station-green;
+                margin-bottom: 12px;
+                &.low { color: #e63946; }
+            }
+
+            .btn-book {
+                width: 100%;
+                background: $mobili-yellow;
+                color: $mobili-blue;
+                border: none;
+                padding: 10px;
+                border-radius: 10px;
+                font-weight: 800;
+                cursor: pointer;
+                &:hover { background: darken($mobili-yellow, 8%); }
+            }
+        }
+    }
+}
+
+// Modal
+.booking-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.booking-modal {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+
+    h3 { color: $mobili-blue; margin-bottom: 20px; text-align: center; }
+
+    .modal-summary {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        p { margin: 5px 0; font-size: 0.9rem; }
+        .modal-price { color: $mobili-blue; font-weight: 800; font-size: 1.1rem; }
+    }
+
+    .booking-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        label { font-size: 0.8rem; font-weight: 700; color: #666; }
+        input { padding: 12px; border: 2px solid #eee; border-radius: 10px; font-size: 1.1rem; }
+        .total-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+            strong { font-size: 1.3rem; color: $mobili-blue; }
+        }
+    }
+
+    .btn-confirm {
+        background: $mobili-yellow;
+        color: $mobili-blue;
+        border: none;
+        padding: 15px;
+        border-radius: 12px;
+        font-weight: 800;
+        cursor: pointer;
+        margin-top: 10px;
+        &:hover { background: darken($mobili-yellow, 10%); }
+    }
+
+    .btn-close {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        color: #999;
+    }
+}
+
+.passengers-list {
+    max-height: 200px;
+    overflow-y: auto;
+    margin: 10px 0;
+    padding-right: 5px;
+
+    .passenger-input-group {
+        margin-bottom: 1px;
+        span { font-size: 0.75rem; color: #888; display: block; margin-bottom: 2px; }
+        input { width: 100%; padding: 8px; border: 1px solid #ddd; }
+    }
+
+    &::-webkit-scrollbar { width: 4px; }
+    &::-webkit-scrollbar-thumb { background: $mobili-yellow; border-radius: 10px; }
+}
+
+// Media Queries
+@media (max-width: 768px) {
+    .trip-card {
+        grid-template-columns: 1fr !important;
+        .trip-image { height: 160px; width: 100% !important; }
+        .trip-action {
+            border-left: none !important;
+            border-top: 2px dashed #f0f0f0;
+            flex-direction: row !important;
+            justify-content: space-between !important;
+            padding: 15px 24px !important;
+            .btn-book { width: auto !important; }
+        }
+    }
+}
+
+@media (min-width: 768px) {
+    .search-card {
+        max-width: 850px;
+        .search-form {
+            flex-direction: row;
+            align-items: flex-end;
+            .input-block { flex: 1; }
+            .btn-main { height: 52px; padding: 0 40px; }
+        }
+    }
+}

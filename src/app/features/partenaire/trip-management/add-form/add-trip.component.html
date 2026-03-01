@@ -1,0 +1,79 @@
+<div class="add-container">
+    <div class="form-card">
+        <div class="form-header">
+            <button routerLink="/partenaire/trips" class="btn-back">←</button>
+            <h2>Publier un trajet complet</h2>
+        </div>
+
+        <form [formGroup]="tripForm" (ngSubmit)="onSubmit()">
+            <div class="form-grid">
+                <div class="field">
+                    <label>Ville de départ</label>
+                    <input type="text" formControlName="departureCity" placeholder="Ex: Dakar">
+                </div>
+                <div class="field">
+                    <label>Ville d'arrivée</label>
+                    <input type="text" formControlName="arrivalCity" placeholder="Ex: Touba">
+                </div>
+
+                <div class="field full-width">
+                    <label>Villes étapes (villes traversées)</label>
+                    <input type="text" formControlName="stops" placeholder="Ex: Thiès, Khombole, Bambey...">
+                </div>
+
+                <div class="field">
+                    <label>Lieu précis d'embarquement</label>
+                    <input type="text" formControlName="boardingPoint"
+                        placeholder="Ex: Garage Pompier, Place de l'Indépendance">
+                </div>
+
+                <div class="field">
+                    <label>Numéro de plaque</label>
+                    <input type="text" formControlName="vehiculePlateNumber" placeholder="Ex: DK-1234-A">
+                    <small *ngIf="tripForm.get('vehiculePlateNumber')?.invalid && tripForm.get('vehiculePlateNumber')?.touched"
+                        style="color: red;">
+                        La plaque d'immatriculation est obligatoire.
+                    </small>
+                </div>
+
+                <div class="field">
+                    <label>Date et Heure de départ</label>
+                    <input type="datetime-local" formControlName="departureDateTime">
+                </div>
+
+                <div class="field">
+                    <label>Type de véhicule</label>
+                    <select formControlName="vehicleType">
+                        <option value="BUS_CLIMATISE">Bus Climatisé</option>
+                        <option value="BUS_CLASSIQUE">Bus Classique</option>
+                        <option value="CAR_CLIMATISE">Car Climatisé</option>
+                        <option value="CAR_CLASSIQUE">Car Classique</option>
+                        <option value="MINIBUS">Minibus</option>
+                        <option value="VAN">Van</option>
+                    </select>
+                </div>
+
+
+                <div class="field">
+                    <label>Photo du véhicule</label>
+                    <input type="file" (change)="onFileSelected($event)" accept="image/*" class="file-input">
+                </div>
+
+                <div class="field">
+                    <label>Prix du billet (FCFA)</label>
+                    <input type="number" formControlName="price" placeholder="5000">
+                </div>
+                <div class="field">
+                    <label>Places totales</label>
+                    <input type="number" formControlName="availableSeats" placeholder="15">
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-save" [disabled]="tripForm.invalid">
+                    Publier le trajet maintenant
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
