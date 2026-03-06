@@ -1,0 +1,80 @@
+$mobili-blue: #092990;
+$mobili-yellow: #FFCC00;
+
+.bus-container {
+  background: #eee;
+  padding: 20px;
+  border-radius: 40px 40px 10px 10px; // Forme de l'avant du bus
+  border: 4px solid #ccc;
+  max-width: 300px;
+  margin: auto;
+  position: relative;
+
+  // Le volant (déco pour le côté glissant)
+  &::before {
+    content: '⭕';
+    position: absolute;
+    top: 5px;
+    right: 20px;
+    font-size: 1.2rem;
+  }
+
+  .grid-bus {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); // 4 sièges par rangée
+    gap: 12px;
+    margin-top: 30px;
+
+    // Créer une allée centrale après le 2ème siège
+    div:nth-child(4n-2) {
+      margin-right: 20px; 
+    }
+
+    .seat {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: $mobili-blue;
+
+      &:hover:not(.occupied) {
+        transform: scale(1.1);
+        border-color: $mobili-yellow;
+      }
+
+      &.selected {
+        background: $mobili-yellow;
+        color: $mobili-blue;
+        border-color: $mobili-blue;
+        box-shadow: 0 0 10px rgba($mobili-yellow, 0.5);
+      }
+
+      &.occupied {
+        background: #d1d1d1;
+        color: #999;
+        cursor: not-allowed;
+        border-color: #bbb;
+      }
+    }
+  }
+}
+
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+  
+  small { display: flex; align-items: center; gap: 5px; font-weight: 500;}
+  .dot { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+  .free { background: white; border: 1px solid #ddd; }
+  .selected { background: $mobili-yellow; }
+  .occupied { background: #d1d1d1; }
+}

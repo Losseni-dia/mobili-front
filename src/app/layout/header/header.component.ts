@@ -9,7 +9,10 @@ import { AuthService } from '../../core/services/auth/auth.service';
   imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
+
 })
+  
+  
 export class HeaderComponent {
   public authService = inject(AuthService);
   private router = inject(Router);
@@ -38,7 +41,10 @@ export class HeaderComponent {
   }
 
   logout() {
-    this.authService.logout();
-    this.router.navigate(['/auth/login']);
+    this.authService.logout(); // Suppression immédiate du token/signal
+    this.router.navigate(['/home'], {
+      replaceUrl: true, // ✅ Empêche de revenir en arrière avec le bouton "Précédent"
+      skipLocationChange: false,
+    });
   }
 }

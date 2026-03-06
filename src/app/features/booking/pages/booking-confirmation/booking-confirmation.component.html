@@ -1,0 +1,47 @@
+<div class="confirmation-container">
+    @if (booking()) {
+    <div class="summary-card">
+        <div class="header">
+            <h2>Récapitulatif de votre voyage</h2>
+            <span class="ref">Réf: {{ booking().reference }}</span>
+        </div>
+
+        <div class="trip-info">
+            <div class="route">
+                <span class="city">{{ booking().departureCity }}</span>
+                <span class="arrow">→</span>
+                <span class="city">{{ booking().arrivalCity }}</span>
+            </div>
+            <p class="date">Départ le {{ booking().departureDateTime | date:'dd/MM/yyyy à HH:mm' }}</p>
+        </div>
+
+        <div class="seats-details">
+            <h3>Sièges réservés ({{ booking().numberOfSeats }})</h3>
+            <ul>
+                <li>
+                    <strong>Sièges:</strong> {{ booking().seatNumbers.join(', ') }}
+                </li>
+            </ul>
+        </div>
+
+        <div class="price-section">
+            <div class="row">
+                <span>Prix unitaire</span>
+                <span>{{ booking().totalPrice / booking().numberOfSeats }} FCFA</span>
+            </div>
+            <div class="row total">
+                <span>Total à payer</span>
+                <span>{{ booking().totalPrice }} FCFA</span>
+            </div>
+        </div>
+
+        <button class="btn-pay" [disabled]="isProcessing()" (click)="confirmAndPay()">
+            {{ isProcessing() ? 'Traitement en cours...' : 'Procéder au paiement' }}
+        </button>
+
+        <p class="secure-msg">🔒 Paiement sécurisé via votre portefeuille Mobili</p>
+    </div>
+    } @else {
+    <div class="loader">Récupération de la réservation...</div>
+    }
+</div>

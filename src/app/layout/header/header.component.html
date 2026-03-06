@@ -3,21 +3,38 @@
 
     <nav class="nav-container">
         @if (authService.isLoggedIn()) {
-        <div class="nav-group">
-            @if (authService.hasRole('ROLE_PARTNER')) {
-            <a routerLink="/partenaire/dashboard" routerLinkActive="active" class="btn-link company">Partenaire</a>
-            <div class="sub-nav">
-                <a routerLink="/partenaire/trips" class="sub-link">Mes Voyages</a>
-                <a routerLink="/partenaire/add-trip" class="sub-link">Publier un trajet</a>
-            </div>
-            }
-            @else {
-            <a routerLink="/partenaire/register" class="btn-link register-partner">Devenir Partenaire</a>
-            }
-        </div>
+        <a routerLink="/gare" routerLinkActive="active" class="nav-item station">Gare</a>
 
-        <div class="nav-group">
-            <a routerLink="/gare" routerLinkActive="active" class="btn-link station">Gare</a>
+        @if (authService.hasRole('ADMIN')) {
+        <div class="dropdown-group">
+            <button class="dropdown-trigger admin-btn">
+                🛠️ Admin <span class="arrow">▾</span>
+            </button>
+            <div class="dropdown-menu">
+                <a routerLink="/admin/dashboard" class="dropdown-link">Tableau de bord</a>
+                <div class="dropdown-divider"></div>
+                <a routerLink="/admin/users" class="dropdown-link">Gérer Utilisateurs</a>
+                <a routerLink="/admin/partners" class="dropdown-link">Gérer Partenaires</a>
+            </div>
+        </div>
+        }
+
+        <div class="dropdown-group">
+            @if (authService.currentUser()?.partnerId || authService.hasRole('PARTNER')) {
+            <button class="dropdown-trigger company">
+                Partenaire <span class="arrow">▾</span>
+            </button>
+            <div class="dropdown-menu">
+                <a routerLink="/partenaire/dashboard" class="dropdown-link">Tableau de bord</a>
+                <div class="dropdown-divider"></div>
+                <a routerLink="/partenaire/trips" class="dropdown-link">Mes Voyages</a>
+                <a routerLink="/partenaire/add-trip" class="dropdown-link">Publier un trajet</a>
+            </div>
+            } @else {
+            <a routerLink="/partenaire/register" class="nav-item register-partner">
+                Devenir Partenaire
+            </a>
+            }
         </div>
         }
     </nav>
@@ -27,20 +44,33 @@
         <div class="user-profile-nav">
             <span class="user-welcome">Salut, <strong>{{ authService.currentUser()?.firstname }}</strong></span>
 
-            <div class="avatar-wrapper" routerLink="/my-account/profile">
-                @let avatar = getAvatarUrl(authService.currentUser()?.avatarUrl);
-
-                @if (avatar) {
-                <img [src]="avatar" alt="Profil" draggable="false">
-                } @else {
-                <div class="header-initials">
-                    {{ getInitials(authService.currentUser()?.firstname, authService.currentUser()?.lastname) }}
+            <div class="dropdown-group">
+                <div class="avatar-wrapper dropdown-trigger-avatar">
+                    @let avatar = getAvatarUrl(authService.currentUser()?.avatarUrl);
+                    @if (avatar) {
+                    <img [src]="avatar" alt="Profil" draggable="false">
+                    } @else {
+                    <div class="header-initials">
+                        {{ getInitials(authService.currentUser()?.firstname, authService.currentUser()?.lastname) }}
+                    </div>
+                    }
                 </div>
-                }
-            </div>
 
-            <button class="btn-account" routerLink="/my-account/profile">Mon Compte</button>
-            <button class="btn-logout" (click)="logout()">Déconnexion</button>
+                <div class="dropdown-menu right">
+                    <div class="dropdown-header">
+                        <strong>{{ authService.currentUser()?.firstname }} {{ authService.currentUser()?.lastname
+                            }}</strong>
+                        <span>{{ authService.currentUser()?.email }}</span>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <a routerLink="/my-account/profile" class="dropdown-link">Mon Profil</a>
+                    <a routerLink="/my-account/settings" class="dropdown-link">Paramètres</a>
+                    <div class="dropdown-divider"></div>
+                    <button (click)="logout()" class="dropdown-link logout">
+                        Déconnexion
+                    </button>
+                </div>
+            </div>
         </div>
         } @else {
         <a routerLink="/auth/login" class="link-auth">Connexion</a>

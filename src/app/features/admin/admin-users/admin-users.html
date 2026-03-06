@@ -1,0 +1,54 @@
+<div class="admin-card">
+    <div class="card-header">
+        <h2>👥 Gestion des Utilisateurs</h2>
+        <p>Gérez les accès et les rôles des membres de la plateforme.</p>
+    </div>
+
+    @if (isLoading()) {
+    <div class="loader">Chargement des utilisateurs...</div>
+    } @else {
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Utilisateur</th>
+                    <th>Email</th>
+                    <th>Rôles</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (user of users(); track user.id) {
+                <tr>
+                <td class="user-name">
+                    <div>{{ user.firstname }} {{ user.lastname }}</div>
+                    @if (user.partnerName) {
+                    <span class="partner-tag">🏢 {{ user.partnerName }}</span>
+                    }
+                </td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        <div class="role-container">
+                            @for (role of user.roles; track role) {
+                            <span class="role-badge">{{ role.replace('ROLE_', '') }}</span>
+                            }
+                        </div>
+                    </td>
+                    <td>
+                        <span [class]="user.enabled ? 'status-active' : 'status-blocked'">
+                            {{ user.enabled ? 'Actif' : 'Banni' }}
+                        </span>
+                    </td>
+                    <td>
+                        <button (click)="updateStatus(user)" [class]="user.enabled ? 'btn-ban' : 'btn-activate'">
+                            {{ user.enabled ? 'Bannir' : 'Réactiver' }}
+                        </button>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    }
+</div>

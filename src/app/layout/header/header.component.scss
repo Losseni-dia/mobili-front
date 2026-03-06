@@ -3,15 +3,15 @@
 
 .header {
     background-color: $mobili-yellow;
-    padding: 0 20px;
+    padding: 0 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     min-height: 80px;
     position: sticky;
     top: 0;
     z-index: 1000;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 
     .logo {
         text-decoration: none;
@@ -25,185 +25,202 @@
     .nav-container {
         display: flex;
         align-items: center;
-        gap: 15px;
+        gap: 20px;
+    }
 
-        .nav-group {
+    .dropdown-link.logout {
+  color: #e74c3c;
+  cursor: pointer;
+  transition: background-color 0.2s; // Animation CSS simple pour le survol
+
+  &:hover {
+    background-color: #f8d7da;
+  }
+}
+}
+
+// Style des boutons de navigation (Gare / Register)
+.nav-item {
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 0.85rem;
+    padding: 8px 18px;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+
+    &.station {
+        color: $station-green;
+        border: 1.5px solid $station-green;
+
+        &.active {
+            background: $station-green;
+            color: white;
+        }
+    }
+
+    &.register-partner {
+        color: $mobili-blue;
+        border: 1.5px dashed $mobili-blue;
+        background: rgba(white, 0.3);
+
+        &:hover {
+            background: white;
+            border-style: solid;
+        }
+    }
+
+    &:hover:not(.active) {
+        transform: translateY(-2px);
+        background: white;
+    }
+}
+
+// DROPDOWN SYSTEM
+.dropdown-group {
+    position: relative;
+
+    // Affichage au survol
+    &:hover .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .dropdown-trigger {
+        background: white;
+        border: 1.5px solid $mobili-blue;
+        color: $mobili-blue;
+        padding: 8px 18px;
+        border-radius: 20px;
+        font-weight: 800;
+        font-size: 0.85rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-transform: uppercase;
+        transition: all 0.2s;
+
+        &:hover {
+            background: $mobili-blue;
+            color: white;
+        }
+
+        .arrow {
+            font-size: 0.7rem;
+        }
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: white;
+        min-width: 220px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        padding: 8px 0;
+        margin-top: 12px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(15px);
+        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+
+        &.right {
+            left: auto;
+            right: 0;
+        }
+
+        // Petit triangle au dessus du menu
+        &::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 20px;
+            width: 12px;
+            height: 12px;
+            background: white;
+            transform: rotate(45deg);
+        }
+
+        &.right::before {
+            left: auto;
+            right: 20px;
+        }
+
+        .dropdown-header {
+            padding: 10px 20px;
             display: flex;
             flex-direction: column;
-            gap: 5px;
-            padding: 0 12px;
-            border-right: 1px solid rgba($mobili-blue, 0.15);
 
-            &:last-of-type {
-                border-right: none;
+            span {
+                font-size: 0.75rem;
+                color: #636e72;
+            }
+        }
+
+        .dropdown-link {
+            display: block;
+            width: 100%;
+            padding: 12px 20px;
+            text-decoration: none;
+            color: #2d3436;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+
+            &:hover {
+                background: rgba($mobili-yellow, 0.2);
+                color: $mobili-blue;
+                padding-left: 25px;
             }
 
-            .btn-link {
-                text-decoration: none;
-                font-weight: 800;
-                font-size: 0.85rem;
-                padding: 6px 12px;
-                border-radius: 6px;
-                border: 1.5px solid transparent;
-                transition: all 0.2s ease-in-out;
-                text-align: center;
+            &.logout {
+                color: #d63031;
 
-                &.admin {
-                    color: $admin-purple;
-                    border-color: $admin-purple;
-                }
-
-                &.company {
-                    color: $mobili-blue;
-                    border-color: $mobili-blue;
-                }
-
-                &.station {
-                    color: $station-green;
-                    border-color: $station-green;
-                }
-
-                &.active {
-                    color: $white;
-
-                    &.admin {
-                        background: $admin-purple;
-                    }
-
-                    &.company {
-                        background: $mobili-blue;
-                    }
-
-                    &.station {
-                        background: $station-green;
-                    }
-                }
-
-                &:hover:not(.active) {
-                    background: rgba($white, 0.6);
+                &:hover {
+                    background: #fff5f5;
                 }
             }
+        }
 
-            .sub-nav {
-                display: flex;
-                gap: 8px;
-                justify-content: center;
-
-                .sub-link {
-                    font-size: 0.7rem;
-                    color: color.adjust($mobili-blue, $lightness: 10%);
-                    text-decoration: none;
-                    font-weight: 600;
-                    opacity: 0.8;
-
-                    &:hover {
-                        opacity: 1;
-                        text-decoration: underline;
-                    }
-                }
-            }
+        .dropdown-divider {
+            height: 1px;
+            background: #f1f2f6;
+            margin: 6px 0;
         }
     }
 }
 
+// ACTIONS ET PROFIL
 .actions {
     display: flex;
     align-items: center;
     gap: 15px;
 
     .user-welcome {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         color: #2d3436;
-        display: none;
-
-        @media (min-width: 768px) {
-            display: block;
-        }
 
         strong {
-            font-weight: 700;
-        }
-    }
-
-    .btn-account {
-        background-color: $mobili-blue;
-        color: $white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 25px;
-        font-weight: 800;
-        cursor: pointer;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s;
-
-        &:hover {
-            transform: translateY(-2px);
-            background-color: color.adjust($mobili-blue, $lightness: -10%);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-    }
-
-    .link-auth {
-        text-decoration: none;
-        color: #2d3436;
-        font-weight: 600;
-
-        &:hover {
             color: $mobili-blue;
         }
     }
 
-    .btn-register {
-        background-color: #2d3436;
-        color: white;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-
-        &:hover {
-            opacity: 0.9;
-        }
-    }
-
-    .btn-logout {
-        background: none;
-        border: 1px solid #dfe6e9;
-        padding: 6px 12px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 0.8rem;
-
-        &:hover {
-            background-color: #fff5f5;
-            color: #d63031;
-            border-color: #ff7675;
-        }
-    }
-}
-
-.user-profile-nav {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-
     .avatar-wrapper {
-        width: 40px;
-        height: 40px;
+        width: 42px;
+        height: 42px;
         border-radius: 50%;
         overflow: hidden;
-        border: 2px solid $white;
-        background-color: $mobili-blue;
+        border: 2px solid white;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         cursor: pointer;
-        transition: transform 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        &:hover {
-            transform: scale(1.1);
-        }
+        background: $mobili-blue;
 
         img {
             width: 100%;
@@ -212,66 +229,58 @@
         }
 
         .header-initials {
-            width: 100%;
             height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 0.85rem;
             font-weight: 800;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+    }
+
+    .btn-register {
+        background-color: #2d3436;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 20px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: opacity 0.2s;
+
+        &:hover {
+            opacity: 0.9;
+        }
+    }
+
+    .link-auth {
+        text-decoration: none;
+        color: #2d3436;
+        font-weight: 700;
+
+        &:hover {
+            color: $mobili-blue;
         }
     }
 }
 
-@media (max-width: 1024px) {
-    .header {
-        flex-direction: column;
-        height: auto;
-        padding: 15px 10px;
-
-        .logo {
-            margin-bottom: 10px;
-        }
-
-        .nav-container {
-            flex-wrap: wrap;
-            justify-content: center;
-            width: 100%;
-            gap: 10px;
-            margin-bottom: 15px;
-
-            .nav-group {
-                border-right: none;
-                border-bottom: 1px solid rgba($mobili-blue, 0.1);
-                padding: 10px;
-                width: 45%;
-            }
-        }
-
-        .actions {
-            width: 100%;
-            justify-content: space-around;
-            padding-top: 10px;
-            border-top: 1px solid rgba($mobili-blue, 0.1);
-        }
-    }
-}
-
-.btn-link.register-partner {
-    color: $mobili-blue; // Changé de jaune à bleu pour la lisibilité
-    border: 1.5px dashed $mobili-blue; // Bordure en pointillé bleue
-    padding: 6px 15px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 800;
-    background: rgba($mobili-yellow, 0.4); // Un léger fond blanc transparent pour le faire ressortir
-
+.admin-btn {
+    background: transparent;
+    color: #475569; // Un gris bleuté pro
+    font-weight: 600;
+    
     &:hover {
-        background: $white;
-        border-style: solid;
-        transform: scale(1.05);
+        color: #1e293b;
     }
+}
+
+// Optionnel : un petit badge "Admin" si tu veux que ce soit très clair
+.admin-badge {
+    background: #e2e8f0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    margin-left: 5px;
+    vertical-align: middle;
 }

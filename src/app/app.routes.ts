@@ -1,8 +1,13 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guard/auth.guard'; // Importe ton nouveau garde
+import { adminGuard } from './core/guard/admin.guard';
+import { AdminDashboard } from './features/admin/admin-dashboard/admin-dashboard';
+import { AdminPartners} from './features/admin/admin-partners/admin-partners';
+import { AdminUsers } from './features/admin/admin-users/admin-users';
 
 export const routes: Routes = [
   // --- ROUTES PUBLIQUES (Ouvertes à tous) ---
+
   {
     path: '',
     loadComponent: () =>
@@ -37,6 +42,13 @@ export const routes: Routes = [
           import('./features/user/profile/profile.component').then((m) => m.ProfileComponent),
       },
       {
+        path: 'profile-edit',
+        loadComponent: () =>
+          import('./features/user/profile/user-edit/user-edit.component').then(
+            (m) => m.UserEditComponent,
+          ),
+      },
+      {
         path: 'bookings',
         loadComponent: () =>
           import('./features/user/my-bookings/my-bookings.component').then(
@@ -45,18 +57,16 @@ export const routes: Routes = [
       },
     ],
   },
-
   // --- ROUTES PARTENAIRES (Badge requis) ---
   {
     path: 'partenaire',
-    canActivate: [authGuard], // Protège le dashboard et la gestion des trajets
+    canActivate: [authGuard],
     children: [
-    
       {
-        path: 'register', // Accessible via /partenaire/register
+        path: 'register',
         loadComponent: () =>
           import('./features/auth/register-partner/register-partner.component').then(
-            (m) => m.RegisterPartnerComponent
+            (m) => m.RegisterPartnerComponent,
           ),
       },
       {
@@ -64,6 +74,14 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/partenaire/dashboard/dashboard.component').then(
             (m) => m.DashboardComponent,
+          ),
+      },
+      // 💡 AJOUT DE LA ROUTE DE MODIFICATION
+      {
+        path: 'settings', // Accessible via /partenaire/settings
+        loadComponent: () =>
+          import('./features/partenaire/partner-edit/partner-edit.component').then(
+            (m) => m.PartnerEditComponent,
           ),
       },
       {
@@ -76,11 +94,17 @@ export const routes: Routes = [
       {
         path: 'add-trip',
         loadComponent: () =>
-          import('./features/partenaire/trip-management/add-form/add-trip.component').then(
+          import('./features/partenaire/trip-management/trip-add/add-trip.component').then(
             (m) => m.AddTripComponent,
           ),
       },
-      
+      {
+        path: 'edit-trip/:id', // URL finale: /partenaire/edit-trip/42
+        loadComponent: () =>
+          import('./features/partenaire/trip-management/trip-edit/trip-edit.component').then(
+            (m) => m.TripEditComponent,
+          ),
+      },
     ],
   },
 
@@ -90,6 +114,37 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () =>
       import('./features/gare/scanner/scanner.component').then((m) => m.ScannerComponent),
+  },
+  {
+    path: 'admin',
+    canActivate: [adminGuard], // Ton guard qui vérifie le rôle ADMIN
+    children: [
+      { path: 'dashboard', component: AdminDashboard },
+      { path: 'users', component: AdminUsers },
+      { path: 'partners', component: AdminPartners },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+    ],
+  },
+
+  {
+    path: 'booking',
+    canActivate: [authGuard],
+    children: [
+      {
+        path: 'trip/:id',
+        loadComponent: () =>
+          import('./features/booking/pages/booking-trip/booking-trip.component').then(
+            (m) => m.BookingTripComponent,
+          ),
+      },
+      {
+        path: 'confirmation/:id',
+        loadComponent: () =>
+          import('./features/booking/pages/booking-confirmation/booking-confirmation.component').then(
+            (m) => m.BookingConfirmationComponent,
+          ),
+      },
+    ],
   },
 
   { path: '**', redirectTo: '' },

@@ -1,0 +1,93 @@
+<div class="edit-trip-container">
+    <div class="header">
+        <h2>Modifier le trajet</h2>
+        <p>Mettez à jour les informations de votre voyage</p>
+    </div>
+
+    <form [formGroup]="tripForm" (ngSubmit)="onSubmit()" class="trip-form">
+
+        <div class="image-upload-section">
+            <label>Image du véhicule</label>
+            <div class="preview-box" (click)="fileInput.click()">
+                @if (imagePreview()) {
+                <img [src]="imagePreview()" alt="Aperçu véhicule">
+                } @else {
+                <div class="placeholder">
+                    <span class="icon">🚌</span>
+                    <p>Cliquez pour changer l'image</p>
+                </div>
+                }
+                <div class="overlay">
+                    <span>Changer l'image</span>
+                </div>
+            </div>
+            <input #fileInput type="file" (change)="onFileSelected($event)" accept="image/*" hidden>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="departureCity">Ville de départ</label>
+                <input id="departureCity" type="text" formControlName="departureCity" placeholder="Ex: Abidjan">
+            </div>
+
+            <div class="form-group">
+                <label for="arrivalCity">Ville d'arrivée</label>
+                <input id="arrivalCity" type="text" formControlName="arrivalCity" placeholder="Ex: Bouaké">
+            </div>
+
+            <div class="form-group">
+                <label for="departureDateTime">Date et Heure de départ</label>
+                <input id="departureDateTime" type="datetime-local" formControlName="departureDateTime">
+            </div>
+
+            <div class="form-group">
+                <label for="boardingPoint">Point d'embarquement</label>
+                <input id="boardingPoint" type="text" formControlName="boardingPoint" placeholder="Ex: Gare de Bassam">
+            </div>
+
+            <div class="form-group">
+                <label for="vehiculePlateNumber">Numéro de plaque</label>
+                <input id="vehiculePlateNumber" type="text" formControlName="vehiculePlateNumber"
+                    placeholder="Ex: 1234 AB 01">
+            </div>
+
+            <div class="form-group">
+                <label for="vehicleType">Type de véhicule</label>
+                <select formControlName="vehicleType">
+                    <option value="Bus Climatisé">Bus Climatisé</option>
+                    <option value="Bus Classique">Bus Classique</option>
+                    <option value="Car Climatisé">Car Climatisé</option>
+                    <option value="Car Classique">Car Classique</option>
+                    <option value="Minibus">Minibus</option>
+                    <option value="Van">Van</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="price">Prix (FCFA)</label>
+                <input id="price" type="number" formControlName="price">
+            </div>
+
+            <div class="form-group">
+                <label for="availableSeats">Places disponibles</label>
+                <input id="availableSeats" type="number" formControlName="availableSeats">
+            </div>
+        </div>
+
+        <div class="form-group full-width">
+            <label for="stops">Villes étapes ou infos (optionnel)</label>
+            <textarea id="stops" formControlName="stops" rows="3" placeholder="Ex: Escale à Yamoussoukro..."></textarea>
+        </div>
+
+        <div class="form-actions">
+            <button type="button" class="btn-secondary" routerLink="/partenaire/trips">
+                Annuler
+            </button>
+
+            <button type="submit" class="btn-primary" [disabled]="tripForm.invalid || isLoading()">
+                <i class="icon-save"></i>
+                {{ isLoading() ? 'Enregistrement...' : 'Enregistrer les modifications' }}
+            </button>
+        </div>
+    </form>
+</div>

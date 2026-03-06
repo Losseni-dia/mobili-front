@@ -30,7 +30,7 @@ export class AddTripComponent {
     stops: [''],
     price: [null, [Validators.required, Validators.min(0)]],
     availableSeats: [null, [Validators.required, Validators.min(1)]],
-    vehicleType: ['BUS_CLASSIQUE', Validators.required],
+    vehicleType: ['Bus classique', Validators.required],
   });
 
   onFileSelected(event: any) {

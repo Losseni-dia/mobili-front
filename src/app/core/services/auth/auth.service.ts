@@ -11,6 +11,16 @@ export interface AuthResponse {
   email: string;
   avatarUrl: string; // Aligné avec ProfileDTO Java
   roles: string[];
+  partnerId?: number;
+}
+
+export interface UserAdmin {
+  id: number;
+  firstname: string;
+  lastname: string;
+  email: string;
+  roles: any[]; // On peut mettre string[] ou any[] selon si le backend envoie des objets Role ou juste des noms
+  enabled: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -27,30 +37,25 @@ export class AuthService {
    * Récupère les détails complets de l'utilisateur.
    * L'intercepteur ajoutera le préfixe /v1 automatique.
    */
-  fetchUserProfile(login: string): Observable<AuthResponse> {
-    return this.http
-      .get<AuthResponse>(`/auth/me`, {
-        params: { login },
-      })
-      .pipe(
-        tap((fullProfile) => {
-          const currentData = this.getUserFromStorage();
-          // On fusionne les nouvelles données avec le token existant
-          const updatedUser = { ...fullProfile, token: currentData?.token || '' };
+  fetchUserProfile(): Observable<AuthResponse> {
+    // 💡 Plus besoin de passer le login en paramètre !
+    return this.http.get<AuthResponse>(`/auth/me`).pipe(
+      tap((fullProfile) => {
+        const currentData = this.getUserFromStorage();
+        // Crucial : On garde le token du login original car le /me ne le renvoie pas
+        const updatedUser = { ...fullProfile, token: currentData?.token || '' };
 
-          console.log('Données profil récupérées :', updatedUser);
-          this.saveUser(updatedUser);
-        }),
-      );
+        console.log('Profil synchronisé avec succès :', updatedUser);
+        this.saveUser(updatedUser);
+      }),
+    );
   }
 
   login(credentials: any): Observable<AuthResponse> {
     return this.http.post<AuthResponse>('/auth/login', credentials).pipe(
-      // On utilise switchMap pour enchaîner le login et la récupération du profil
       switchMap((authData) => {
-        this.saveUser(authData);
-        // On va chercher le profil complet immédiatement
-        return this.fetchUserProfile(authData.login);
+        this.saveUser(authData); // Stocke le token reçu
+        return this.fetchUserProfile(); // 💡 Appel sans argument
       }),
     );
   }
@@ -81,12 +86,31 @@ export class AuthService {
 
   // Dans auth.service.ts
 
+  // auth.service.ts
+
   hasRole(roleName: string): boolean {
-    const user = this.currentUser(); // Récupère ton signal d'utilisateur
-    if (!user || !user.roles) {
-      return false;
-    }
-    // On vérifie si le tableau des rôles contient le rôle (ex: 'ROLE_PARTNER')
-    return user.roles.includes(roleName);
+    const user = this.currentUser();
+    if (!user || !user.roles) return false;
+
+    // On nettoie le nom demandé pour enlever "ROLE_" s'il est présent
+    const cleanRoleName = roleName.replace('ROLE_', '');
+
+    // On vérifie si le tableau contient soit "PARTNER", soit "ROLE_PARTNER"
+    return user.roles.some((role) => role === cleanRoleName || role === `ROLE_${cleanRoleName}`);
   }
+
+  /**
+   * Met à jour le profil de l'utilisateur (Infos + Avatar)
+   */
+  updateProfile(userId: number, formData: FormData): Observable<AuthResponse> {
+    // 💡 L'intercepteur ajoutera /v1/users/${userId}
+    return this.http.put<AuthResponse>(`/users/${userId}`, formData).pipe(
+      tap(() => {
+        // Une fois mis à jour, on rafraîchit les signaux globaux
+        this.fetchUserProfile().subscribe();
+      }),
+    );
+  }
+
+ 
 }

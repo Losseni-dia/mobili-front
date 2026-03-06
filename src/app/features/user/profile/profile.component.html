@@ -14,7 +14,13 @@
                 }
             </div>
             <h2>{{ authService.currentUser()?.firstname }} {{ authService.currentUser()?.lastname }}</h2>
-            <span class="role-badge">{{ authService.currentUser()?.roles?.[0] }}</span>
+            <div class="roles-container">
+                @for (role of authService.currentUser()?.roles; track role) {
+                <span class="role-badge">
+                    {{ role.replace('ROLE_', '') }}
+                </span>
+                }
+            </div>
         </div>
 
         <div class="profile-body">
@@ -28,8 +34,10 @@
             </div>
         </div>
 
-        <div class="profile-footer">
-            <button class="btn-edit">Modifier mes informations</button>
-        </div>
+    <div class="profile-footer">
+        <button class="btn-edit" routerLink="/my-account/profile-edit">
+            Modifier mes informations
+        </button>
+    </div>
     </div>
 </div>

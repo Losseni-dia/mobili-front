@@ -335,6 +335,23 @@ $shadow-hover: 0 12px 30px rgba(0, 0, 0, 0.12);
     &::-webkit-scrollbar-thumb { background: $mobili-yellow; border-radius: 10px; }
 }
 
+.vehicle-type {
+    background: #f4f6f7; // Bleu très léger
+    color: #127d04; // Bleu Mobili
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.partner-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
 // Media Queries
 @media (max-width: 768px) {
     .trip-card {

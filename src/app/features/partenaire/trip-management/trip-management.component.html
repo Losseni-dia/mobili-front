@@ -5,7 +5,11 @@
     </div>
 
     <div class="table-wrapper">
-        <table *ngIf="myTrips.length > 0; else empty">
+        @if (isLoading()) {
+        <div class="loading-state">Chargement des trajets...</div>
+        } @else {
+        @if (myTrips().length > 0) {
+        <table>
             <thead>
                 <tr>
                     <th>Véhicule</th>
@@ -17,41 +21,50 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let trip of myTrips">
+                @for (trip of myTrips(); track trip.id) {
+                <tr>
                     <td class="col-vehicle">
-                    <div class="vehicle-thumb">
-                        <img *ngIf="trip.vehicleImageUrl; else noPhoto" [src]="IMAGE_BASE_URL + trip.vehicleImageUrl" alt="Bus">
-                    
-                        <ng-template #noPhoto>
+                        <div class="vehicle-thumb">
+                            @if (trip.vehicleImageUrl) {
+                            <img [src]="IMAGE_BASE_URL + trip.vehicleImageUrl" alt="Bus">
+                            } @else {
                             <span class="default-icon">🚌</span>
-                        </ng-template>
-                    </div>
+                            }
+                        </div>
                     </td>
 
                     <td>
                         <strong>{{ trip.departureCity }}</strong> ➔ {{ trip.arrivalCity }}
-                        <div *ngIf="trip.moreInfo" class="stops-info">
+                        <div class="vehicle-type-badge">
+                            {{ formatVehicleType(trip.vehicleType) }}
+                        </div>
+                        @if (trip.moreInfo) {
+                        <div class="stops-info">
                             <small>📍 Via : {{ trip.moreInfo }}</small>
                         </div>
+                        }
                     </td>
 
                     <td>{{ trip.departureDateTime | date:'dd/MM/yyyy HH:mm' }}</td>
                     <td>{{ trip.price | number }} FCFA</td>
                     <td>{{ trip.availableSeats }}</td>
                     <td>
-                        <button class="btn-icon">✏️</button>
+                        <button class="btn-icon" [routerLink]="['/partenaire/edit-trip', trip.id]">
+                            ✏️
+                        </button>
                         <button class="btn-icon delete" (click)="onDelete(trip.id)">
                             🗑️
                         </button>
                     </td>
                 </tr>
+                }
             </tbody>
         </table>
-
-        <ng-template #empty>
-            <div class="empty-state">
-                <p>Vous n'avez pas encore de trajets enregistrés.</p>
-            </div>
-        </ng-template>
+        } @else {
+        <div class="empty-state">
+            <p>Vous n'avez pas encore de trajets enregistrés.</p>
+        </div>
+        }
+        }
     </div>
 </div>
