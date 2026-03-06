@@ -1,0 +1,56 @@
+<div class="dashboard-container">
+
+    <section class="company-card-top">
+        <div class="company-logo-wrapper">
+            @if (companyInfo()?.logoUrl) {
+            <img [src]="getLogoUrl(companyInfo()?.logoUrl)" alt="Logo">
+            } @else {
+            <div class="placeholder-logo">{{ companyInfo()?.name?.[0] || 'P' }}</div>
+            }
+        </div>
+        <div class="company-details">
+            <span class="badge-status" [class.active]="companyInfo()?.enabled">
+                {{ companyInfo()?.enabled ? 'Vérifié' : 'En attente' }}
+            </span>
+            <h1>{{ companyInfo()?.name || 'Mon Entreprise' }}</h1>
+            <p>RCCM : {{ companyInfo()?.businessNumber }} | Tel : {{ companyInfo()?.phone }}</p>
+        </div>
+        <div class="header-actions">
+            <button routerLink="/partenaire/add-trip" class="btn-primary">
+                + Publier un trajet
+            </button>
+        </div>
+    </section>
+
+    <div class="stats-grid">
+        @for (stat of stats; track stat.label) {
+        <div class="stat-card">
+            <div class="stat-icon" [style.background-color]="stat.color + '22'"></div>
+            <div class="stat-info">
+                <h3>{{ stat.value }}</h3>
+                <p>{{ stat.label }}</p>
+            </div>
+        </div>
+        }
+    </div>
+
+    <div class="dashboard-content">
+        <section class="quick-actions">
+            <h2>Actions Rapides</h2>
+            <div class="action-buttons">
+                <a routerLink="/partenaire/trips" class="action-card">
+                    <span>📅</span> Gérer mes voyages
+                </a>
+                <a routerLink="/partenaire/settings" class="action-card"> <span>🏢</span> Profil Partenaire
+                </a>
+            </div>
+        </section>
+
+        <section class="recent-activity">
+            <h2>Dernières réservations</h2>
+            <div class="empty-state">
+                <p>Aucune réservation récente à afficher pour {{ companyInfo()?.name }}.</p>
+            </div>
+        </section>
+    </div>
+</div>

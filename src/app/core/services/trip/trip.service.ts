@@ -35,9 +35,15 @@ export class TripService {
     return this.http.get<Trip[]>(`/trips/search?from=${from}&to=${to}&date=${date}`);
   }
 
-  /**
-   * Supprime un trajet par son ID
-   */
+  getTripById(id: number): Observable<any> {
+    return this.http.get<any>(`/trips/${id}`); // Vérifie que l'URL correspond à ton JSON
+  }
+
+  updateTrip(id: number, formData: FormData): Observable<Trip> {
+    // On utilise PUT avec le FormData
+    return this.http.put<Trip>(`/trips/${id}`, formData);
+  }
+
   deleteTrip(id: number): Observable<void> {
     // Utilisation directe de la chaîne pour être raccord avec tes autres méthodes
     return this.http.delete<void>(`/trips/${id}`);

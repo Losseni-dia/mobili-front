@@ -1,0 +1,51 @@
+<div class="table-card">
+    <div class="card-header">
+        <h2>🏢 Gestion des Partenaires</h2>
+    </div>
+
+    @if (isLoading()) {
+    <div class="loader">Chargement des partenaires...</div>
+    } @else {
+    <table>
+        <thead>
+            <tr>
+                <th>Logo</th>
+                <th>Compagnie</th>
+                <th>Email Propriétaire</th>
+                <th>Statut</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (p of partners(); track p.id) {
+            <tr>
+                <td>
+                    <div class="partner-avatar">
+                        @if (p.logoUrl) {
+                        <img [src]="IMAGE_BASE_URL + p.logoUrl" alt="logo"
+                            (error)="$any($event.target).style.display = 'none'">
+                        } @else {
+                        <div class="initial-placeholder">
+                            {{ p.name?.charAt(0) }}
+                        </div>
+                        }
+                    </div>
+                </td>
+                <td><strong>{{ p.name }}</strong></td>
+                <td>{{ p.email }}</td>
+                <td>
+                    <span class="status-badge" [ngClass]="p.enabled ? 'active' : 'pending'">
+                        {{ p.enabled ? 'Actif' : 'Suspendu' }}
+                    </span>
+                </td>
+                <td>
+                    <button [class]="p.enabled ? 'btn-reject' : 'btn-approve'" (click)="togglePartner(p.id)">
+                        {{ p.enabled ? 'Suspendre' : 'Approuver' }}
+                    </button>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+    }
+</div>

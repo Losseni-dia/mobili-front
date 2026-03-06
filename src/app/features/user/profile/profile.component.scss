@@ -135,13 +135,23 @@
     }
 }
 
-.role-badge {
-    background-color: #092990;
-    color: white;
-    padding: 5px 15px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 700;
+.roles-container {
+    display: flex;
+    gap: 8px;
+    /* Espace entre les badges */
+    justify-content: center;
     margin-top: 10px;
-    display: inline-block;
+    flex-wrap: wrap;
+    /* Pour passer à la ligne si trop de rôles */
+}
+
+.role-badge {
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    border: 1px solid #bae6fd;
 }

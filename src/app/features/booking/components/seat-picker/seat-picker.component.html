@@ -1,0 +1,16 @@
+<div class="bus-container">
+    <div class="grid-bus">
+        @for (seat of seatListSignal(); track seat) {
+        <div class="seat" [class.selected]="selectedSeats().includes(seat)"
+            [class.occupied]="occupiedSeats.includes(seat)" (click)="onSeatClick(seat)">
+            {{ seat }}
+        </div>
+        }
+    </div>
+</div>
+
+<div class="legend">
+    <small><span class="dot free"></span> Libre</small>
+    <small><span class="dot selected"></span> Sélectionné</small>
+    <small><span class="dot occupied"></span> Occupé</small>
+</div>

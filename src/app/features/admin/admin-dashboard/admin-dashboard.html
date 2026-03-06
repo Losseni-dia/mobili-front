@@ -1,0 +1,48 @@
+<div class="dashboard-wrapper">
+    <div class="dashboard-header">
+        <h1>Reporting Global</h1>
+        <p>Statistiques et indicateurs de performance de la plateforme.</p>
+    </div>
+
+    @if (isLoading()) {
+    <div class="skeleton-grid">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+    </div>
+    } @else {
+    <div class="stats-grid">
+        <div class="stat-card blue">
+            <div class="stat-icon">👥</div>
+            <div class="stat-content">
+                <span class="stat-label">Utilisateurs</span>
+                <span class="stat-value">{{ stats()?.totalUsers }}</span>
+            </div>
+        </div>
+
+        <div class="stat-card purple">
+            <div class="stat-icon">🏢</div>
+            <div class="stat-content">
+                <span class="stat-label">Partenaires</span>
+                <span class="stat-value">{{ stats()?.totalPartners }}</span>
+            </div>
+        </div>
+
+        <div class="stat-card green">
+            <div class="stat-icon">💰</div>
+            <div class="stat-content">
+                <span class="stat-label">Chiffre d'Affaires</span>
+                <span class="stat-value">{{ stats()?.totalRevenue | number }} FCFA</span>
+            </div>
+        </div>
+
+        <div class="stat-card orange">
+            <div class="stat-icon">🚌</div>
+            <div class="stat-content">
+                <span class="stat-label">Trajets Publiés</span>
+                <span class="stat-value">{{ stats()?.totalTrips }}</span>
+            </div>
+        </div>
+    </div>
+    }
+</div>

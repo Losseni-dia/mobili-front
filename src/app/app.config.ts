@@ -4,15 +4,19 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http'; // M
 
 import { routes } from './app.routes';
 import { apiInterceptor } from './core/interceptors/api.interceptor'; // Manquant !
+import { authInterceptor } from './core/interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideBrowserGlobalErrorListeners(),
 
-    // C'est ICI que l'application devient sérieuse
     provideHttpClient(
-      withInterceptors([apiInterceptor]), // On lie ton travail sur l'API ici
+      withInterceptors([
+        apiInterceptor, // 1. On prépare l'URL (ex: http://localhost:8080/v1/...)
+        authInterceptor, // 2. On injecte le Token (Bearer eyJhbG...) 💡 AJOUTE-LE ICI
+        
+      ]),
     ),
   ],
 };

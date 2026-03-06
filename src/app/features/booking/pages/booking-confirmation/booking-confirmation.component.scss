@@ -1,0 +1,80 @@
+.confirmation-container {
+  display: flex;
+  justify-content: center;
+  padding: 50px 20px;
+  background: #f4f7f6;
+  min-height: 80vh;
+
+  .summary-card {
+    background: white;
+    width: 100%;
+    max-width: 500px;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px dashed #eee;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+      h2 { font-size: 1.2rem; margin: 0; color: #2c3e50; }
+      .ref { font-size: 0.8rem; color: #7f8c8d; }
+    }
+
+    .trip-info {
+      text-align: center;
+      margin-bottom: 25px;
+      .route {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #27ae60;
+        .arrow { margin: 0 15px; color: #bdc3c7; }
+      }
+      .date { color: #7f8c8d; margin-top: 5px; }
+    }
+
+    .price-section {
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 25px 0;
+      .row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        &.total {
+          border-top: 1px solid #ddd;
+          padding-top: 15px;
+          font-weight: bold;
+          font-size: 1.3rem;
+          color: #2c3e50;
+        }
+      }
+    }
+
+    .btn-pay {
+      width: 100%;
+      padding: 15px;
+      background: #27ae60;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+      &:hover { background: #219150; }
+      &:disabled { background: #bdc3c7; cursor: not-allowed; }
+    }
+
+    .secure-msg {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #95a5a6;
+      margin-top: 15px;
+    }
+  }
+}

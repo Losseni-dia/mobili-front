@@ -1,40 +1,51 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
-// Interface pour typer tes données de réservation
+export interface SeatSelection {
+  passengerName: string;
+  seatNumber: string;
+}
+
 export interface BookingRequest {
   tripId: number;
   userId: number;
-  passengerNames: string[];
   numberOfSeats: number;
+  selections: SeatSelection[]; // On remplace les deux tableaux par celui-ci
 }
 
 @Injectable({ providedIn: 'root' })
 export class BookingService {
   private http = inject(HttpClient);
+  private readonly API_URL = '/bookings';
 
   /**
-   * Créer une nouvelle réservation (Statut PENDING par défaut)
-   * @param bookingData Données incluant le trajet, l'utilisateur et les passagers
+   * ✅ Récupère les sièges occupés.
+   * Si l'API échoue, on renvoie [] pour que le bus s'affiche quand même.
+   */
+  getOccupiedSeats(tripId: number): Observable<string[]> {
+    return this.http
+      .get<string[]>(`${this.API_URL}/trips/${tripId}/occupied-seats`)
+      .pipe(catchError(() => of([])));
+  }
+
+  /**
+   * Enregistre la réservation et les sièges choisis
    */
   createBooking(bookingData: BookingRequest): Observable<any> {
-    return this.http.post('/bookings', bookingData);
+    return this.http.post(this.API_URL, bookingData);
   }
 
-  /**
-   * Confirmer le paiement d'une réservation (Passe à CONFIRMED)
-   * @param bookingId L'identifiant de la réservation
-   */
   confirmPayment(bookingId: number): Observable<void> {
-    return this.http.patch<void>(`/bookings/${bookingId}/confirm`, {});
+    return this.http.patch<void>(`${this.API_URL}/${bookingId}/confirm`, {});
   }
 
-  /**
-   * Récupérer l'historique des réservations d'un utilisateur spécifique
-   * @param userId L'identifiant du client
-   */
   getUserBookings(userId: number): Observable<any[]> {
-    return this.http.get<any[]>(`/bookings/user/${userId}`);
+    return this.http.get<any[]>(`${this.API_URL}/user/${userId}`);
+  }
+
+  getBookingById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.API_URL}/${id}`);
   }
 }

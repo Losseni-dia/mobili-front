@@ -20,6 +20,7 @@ export class RegisterPartnerComponent {
 
   isLoading = signal(false);
   selectedLogo: File | null = null;
+  logoPreview = signal<string | null>(null);
 
   partnerForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
@@ -32,6 +33,10 @@ export class RegisterPartnerComponent {
     const file = event.target.files[0];
     if (file) {
       this.selectedLogo = file;
+      // Générer un aperçu
+      const reader = new FileReader();
+      reader.onload = () => this.logoPreview.set(reader.result as string);
+      reader.readAsDataURL(file);
     }
   }
 
@@ -54,23 +59,18 @@ export class RegisterPartnerComponent {
 
     this.partenaireService.registerPartner(formData).subscribe({
       next: () => {
-        const login = this.authService.currentUser()?.login;
-
-        if (login) {
-          // 💡 CRUCIAL : On récupère le profil mis à jour pour obtenir le ROLE_PARTNER
-          // Cela met à jour le Signal dans AuthService, ce qui rafraîchit le Header automatiquement.
-          this.authService.fetchUserProfile(login).subscribe({
-            next: () => {
-              this.router.navigate(['/partenaire/dashboard']);
-            },
-            error: () => {
-              // En cas d'erreur de rafraîchissement, on tente quand même la redirection
-              this.router.navigate(['/partenaire/dashboard']);
-            },
-          });
-        } else {
-          this.router.navigate(['/partenaire/dashboard']);
-        }
+        // 💡 On appelle fetchUserProfile() SANS argument.
+        // Le Backend utilisera le Token pour savoir quel profil mettre à jour.
+        this.authService.fetchUserProfile().subscribe({
+          next: () => {
+            // Une fois le profil (et le ROLE_PARTNER) récupéré, on redirige
+            this.router.navigate(['/partenaire/dashboard']);
+          },
+          error: (err) => {
+            console.error('Erreur rafraîchissement profil :', err);
+            this.router.navigate(['/partenaire/dashboard']);
+          },
+        });
       },
       error: (err) => {
         console.error('Erreur inscription partenaire :', err);

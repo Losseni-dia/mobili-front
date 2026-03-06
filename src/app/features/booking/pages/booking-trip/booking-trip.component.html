@@ -1,0 +1,53 @@
+<div class="booking-layout">
+    <section class="seat-selection">
+        <h2>Choisissez vos places</h2>
+
+        @if (tripDetails()) {
+        <app-seat-picker [totalSeats]="tripDetails().availableSeats" [occupiedSeats]="occupiedSeats()"
+            (seatToggle)="onSeatToggle($event)">
+        </app-seat-picker>
+        } @else {
+        <div class="bus-loader">
+            <div class="spinner"></div>
+            <p>Récupération du plan de bus officiel...</p>
+        </div>
+        }
+    </section>
+
+    <section class="passenger-details">
+        <h2>Détails des passagers</h2>
+
+        <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()">
+            <div formArrayName="passengerNames">
+                @for (seat of bookingForm.get('selectedSeats')?.value; track seat; let i = $index) {
+                <div class="input-field">
+                    <label>Nom du passager - Siège <strong>{{ seat }}</strong></label>
+                    <input [formControlName]="i" placeholder="Entrez le nom complet">
+                </div>
+                } @empty {
+                <div class="empty-msg">
+                    Veuillez cliquer sur un siège pour commencer.
+                </div>
+                }
+            </div>
+
+            @if (bookingForm.get('selectedSeats')?.value?.length > 0) {
+            <div class="booking-summary">
+                <div class="summary-line">
+                    <span>Places sélectionnées :</span>
+                    <strong>{{ bookingForm.get('selectedSeats')?.value.length }}</strong>
+                </div>
+                <div class="summary-line total">
+                    <span>Prix Total :</span>
+                    <strong>{{ (bookingForm.get('selectedSeats')?.value.length * tripPrice()) | number }} FCFA</strong>
+                </div>
+            </div>
+            }
+
+            <button type="submit"
+                [disabled]="bookingForm.invalid || (bookingForm.get('selectedSeats')?.value?.length === 0)">
+                Confirmer la réservation
+            </button>
+        </form>
+    </section>
+</div>
