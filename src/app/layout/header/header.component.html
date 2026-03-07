@@ -3,7 +3,12 @@
 
     <nav class="nav-container">
         @if (authService.isLoggedIn()) {
-        <a routerLink="/gare" routerLinkActive="active" class="nav-item station">Gare</a>
+
+        @if (authService.hasRole('ADMIN') || authService.hasRole('PARTNER') || authService.hasRole('CHAUFFEUR')) {
+        <a routerLink="/gare" routerLinkActive="active" class="nav-item station">
+            🚉 Gare
+        </a>
+        }
 
         @if (authService.hasRole('ADMIN')) {
         <div class="dropdown-group">
@@ -20,7 +25,8 @@
         }
 
         <div class="dropdown-group">
-            @if (authService.currentUser()?.partnerId || authService.hasRole('PARTNER')) {
+            @if (authService.currentUser()?.partnerId || authService.hasRole('PARTNER') ||
+            authService.hasRole('CHAUFFEUR')) {
             <button class="dropdown-trigger company">
                 Partenaire <span class="arrow">▾</span>
             </button>
@@ -28,7 +34,9 @@
                 <a routerLink="/partenaire/dashboard" class="dropdown-link">Tableau de bord</a>
                 <div class="dropdown-divider"></div>
                 <a routerLink="/partenaire/trips" class="dropdown-link">Mes Voyages</a>
+                @if (authService.hasRole('PARTNER') || authService.hasRole('ADMIN')) {
                 <a routerLink="/partenaire/add-trip" class="dropdown-link">Publier un trajet</a>
+                }
             </div>
             } @else {
             <a routerLink="/partenaire/register" class="nav-item register-partner">
@@ -63,8 +71,9 @@
                         <span>{{ authService.currentUser()?.email }}</span>
                     </div>
                     <div class="dropdown-divider"></div>
-                    <a routerLink="/my-account/profile" class="dropdown-link">Mon Profil</a>
-                    <a routerLink="/my-account/settings" class="dropdown-link">Paramètres</a>
+                    <a routerLink="/my-account/profile" class="dropdown-link">👤 Mon Profil</a>
+                    <a routerLink="/my-account/my-tickets" class="dropdown-link">🎫 Mes Billets</a>
+                    <a routerLink="/my-account/settings" class="dropdown-link">⚙️ Paramètres</a>
                     <div class="dropdown-divider"></div>
                     <button (click)="logout()" class="dropdown-link logout">
                         Déconnexion

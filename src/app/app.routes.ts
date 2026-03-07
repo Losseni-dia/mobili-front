@@ -55,6 +55,13 @@ export const routes: Routes = [
             (m) => m.MyBookingsComponent,
           ),
       },
+      {
+        path: 'my-tickets',
+        loadComponent: () =>
+          import('./features/bookings/my-tickets/my-tickets.component').then(
+            (m) => m.MyTicketsComponent,
+          ),
+      },
     ],
   },
   // --- ROUTES PARTENAIRES (Badge requis) ---
@@ -113,7 +120,7 @@ export const routes: Routes = [
     path: 'gare',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/gare/scanner/scanner.component').then((m) => m.ScannerComponent),
+      import('./features/gare/scanner/scanner.component').then((m) => m.TicketScannerComponent),
   },
   {
     path: 'admin',
@@ -133,14 +140,14 @@ export const routes: Routes = [
       {
         path: 'trip/:id',
         loadComponent: () =>
-          import('./features/booking/pages/booking-trip/booking-trip.component').then(
+          import('./features/bookings/booking-trip/booking-trip.component').then(
             (m) => m.BookingTripComponent,
           ),
       },
       {
         path: 'confirmation/:id',
         loadComponent: () =>
-          import('./features/booking/pages/booking-confirmation/booking-confirmation.component').then(
+          import('./features/bookings/booking-confirmation/booking-confirmation.component').then(
             (m) => m.BookingConfirmationComponent,
           ),
       },

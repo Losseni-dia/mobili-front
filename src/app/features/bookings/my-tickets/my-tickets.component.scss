@@ -1,0 +1,317 @@
+@import '../../../../styles.scss';
+
+// Variables locales basées sur ton identité Mobili
+$mobili-yellow: #ffcc00;
+$mobili-blue: #092990;
+$white: #ffffff;
+$text-dark: #1a1a1a;
+$gray-muted: #7f8c8d;
+
+:host {
+  display: block;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.tickets-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 40px;
+    h1 {
+      color: $mobili-blue;
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    p {
+      color: $gray-muted;
+    }
+  }
+
+  .ticket-card {
+    display: flex;
+    background: $white;
+    border-radius: 16px;
+    margin-bottom: 25px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+
+    &:hover {
+      transform: translateY(-3px);
+    }
+
+    .ticket-main {
+      flex: 1;
+      padding: 25px 30px;
+      border-left: 10px solid $mobili-blue; // Couleur principale Mobili
+
+      .ticket-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+
+        .partner {
+          font-weight: 900;
+          color: $mobili-blue;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .status-badge {
+          background: $mobili-yellow;
+          color: $text-dark;
+          padding: 4px 14px;
+          border-radius: 50px;
+          font-size: 0.7rem;
+          font-weight: 800;
+          &.used {
+            background: #eee;
+            color: #888;
+          }
+        }
+      }
+
+      .route-display {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+
+        .point {
+          display: flex;
+          flex-direction: column;
+          .time {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: $text-dark;
+          }
+          .city {
+            color: $gray-muted;
+            font-weight: 600;
+            font-size: 1rem;
+          }
+
+          // Supprime l'espace des points vides (heure d'arrivée)
+          .time:empty {
+            display: none;
+          }
+        }
+
+        .connector {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          margin: 0 25px;
+
+          .bus-icon.mirror {
+            font-size: 1.5rem;
+            margin-bottom: 2px;
+            display: inline-block;
+            transform: scaleX(-1); // 💡 Retourne le bus vers la droite
+          }
+
+          .line {
+            width: 100%;
+            height: 0;
+            border-top: 2px dashed #ddd;
+          }
+        }
+      }
+
+      .ticket-footer {
+        display: flex;
+        gap: 35px;
+        border-top: 1px solid #f0f0f0;
+        padding-top: 15px;
+
+        .info-group {
+          display: flex;
+          flex-direction: column;
+          .label {
+            font-size: 0.65rem;
+            color: #aaa;
+            font-weight: bold;
+            margin-bottom: 2px;
+          }
+          .value {
+            font-weight: 700;
+            color: $text-dark;
+            font-size: 0.9rem;
+          }
+        }
+      }
+    }
+
+    .ticket-stub {
+      width: 180px;
+      background: #fffdf5; // Teinte très légère de jaune
+      border-left: 2px dashed $mobili-yellow; // Pointillés jaunes Mobili
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+
+      // Encoches du ticket
+      &::before,
+      &::after {
+        content: '';
+        position: absolute;
+        left: -11px;
+        width: 22px;
+        height: 22px;
+        background: #f8f9fa;
+        border-radius: 50%;
+      }
+      &::before {
+        top: -11px;
+      }
+      &::after {
+        bottom: -11px;
+      }
+
+      .stub-info {
+        text-align: center;
+        margin-bottom: 12px;
+
+        .label {
+          font-size: 0.65rem;
+          color: #999;
+          font-weight: bold;
+          text-transform: uppercase;
+          display: block;
+          margin-bottom: 4px;
+        }
+
+        .seat-badge {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 5px; // Espace entre l'icône et le numéro
+
+          .seat-icon {
+            font-size: 1.2rem; // Taille de l'émoji
+            opacity: 0.8;
+          }
+
+          .seat-number {
+            font-size: 2.2rem; // On le garde bien gros
+            font-weight: 900;
+            color: $mobili-blue;
+            line-height: 1;
+          }
+        }
+
+        .value {
+          font-weight: 800;
+          color: $mobili-blue;
+          display: block;
+          font-size: 0.75rem;
+        }
+      }
+
+      .qr-code {
+        background: white;
+        padding: 5px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        img {
+          width: 85px;
+          height: 85px;
+          display: block;
+        }
+      }
+
+      .serial {
+        margin-top: 10px;
+        font-family: 'Monaco', 'Courier New', monospace;
+        font-size: 0.6rem;
+        color: #bbb;
+      }
+    }
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    background: white;
+    border-radius: 20px;
+    .icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+    h2 {
+      color: $mobili-blue;
+    }
+    .btn-primary {
+      background: $mobili-blue;
+      color: white;
+      border: none;
+      padding: 14px 35px;
+      border-radius: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+      &:hover {
+        background: lighten($mobili-blue, 10%);
+      }
+    }
+  }
+}
+
+// Loader simple
+.loader {
+  text-align: center;
+  padding: 40px;
+  color: $mobili-blue;
+  font-weight: bold;
+}
+
+.ticket-actions {
+    padding: 15px 30px;
+    background: #fdfdfd;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+
+    .btn-download {
+        background: $white;
+        color: $mobili-blue;
+        border: 2px solid $mobili-blue;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover {
+            background: $mobili-blue;
+            color: $white;
+        }
+    }
+}
+
+// 🖨️ RÈGLE D'OR POUR L'IMPRESSION
+@media print {
+    .page-header, .ticket-actions, .btn-primary, .header-mobili {
+        display: none !important; // Cache tout sauf le ticket
+    }
+    .ticket-card {
+        box-shadow: none !important;
+        border: 1px solid #000;
+        page-break-inside: avoid;
+    }
+    .tickets-container {
+        padding: 0;
+    }
+}

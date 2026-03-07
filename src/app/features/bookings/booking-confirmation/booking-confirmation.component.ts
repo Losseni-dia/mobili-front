@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BookingService } from '../../../../core/services/booking/booking.service';
+import { BookingService } from '../../../core/services/booking/booking.service';
 
 @Component({
   selector: 'app-booking-confirmation',
@@ -36,15 +36,15 @@ export class BookingConfirmationComponent implements OnInit {
     this.isProcessing.set(true);
     const id = this.booking().id;
 
-    // Appel au endpoint PATCH /v1/bookings/{id}/confirm
     this.bookingService.confirmPayment(id).subscribe({
       next: () => {
-        // Une fois payé, on redirige vers l'affichage des tickets
-        this.router.navigate(['/tickets/my-tickets']);
+        // ✅ On redirige vers /booking/my-tickets (Route cohérente avec tes nouveaux dossiers)
+        this.router.navigate(['/booking/my-tickets']);
       },
       error: (err) => {
         console.error('Erreur paiement', err);
         this.isProcessing.set(false);
+        // Tu pourrais ici afficher un petit message d'erreur si le solde est insuffisant
       },
     });
   }
