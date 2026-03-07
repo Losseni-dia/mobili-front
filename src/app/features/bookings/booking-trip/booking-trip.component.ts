@@ -1,15 +1,15 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
-import { SeatPickerComponent } from '../../components/seat-picker/seat-picker.component';
+import { SeatPickerComponent } from '../../booking/components/seat-picker/seat-picker.component';
 import {
   BookingService,
   BookingRequest,
   SeatSelection,
-} from '../../../../core/services/booking/booking.service';
+} from '../../../core/services/booking/booking.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TripService } from '../../../../core/services/trip/trip.service';
-import { AuthService } from '../../../../core/services/auth/auth.service';
+import { TripService } from '../../../core/services/trip/trip.service';
+import { AuthService } from '../../../core/services/auth/auth.service';
 
 @Component({
   selector: 'app-booking-trip',

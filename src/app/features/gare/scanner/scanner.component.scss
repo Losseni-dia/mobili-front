@@ -1,0 +1,78 @@
+@import '../../../../styles.scss';
+
+.scanner-page {
+  background: #121212; // Fond noir pour faire ressortir la caméra
+  height: 100vh;
+  color: white;
+  display: flex;
+  flex-direction: column;
+
+  .scanner-header {
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    .btn-back { position: absolute; left: 20px; top: 20px; background: none; border: none; color: white; font-size: 1.5rem; }
+    h1 { font-size: 1.2rem; margin: 0; }
+    p { color: $mobili-yellow; font-size: 0.8rem; }
+  }
+
+  .camera-container {
+    flex: 1;
+    position: relative;
+    background: black;
+    overflow: hidden;
+
+    zxing-scanner { width: 100%; height: 100%; }
+
+    .scan-overlay {
+      position: absolute; top: 50%; left: 50%;
+      width: 260px; height: 260px;
+      transform: translate(-50%, -50%);
+      
+      .corner {
+        position: absolute; width: 40px; height: 40px;
+        border: 4px solid $mobili-yellow;
+        &.top-left { top: 0; left: 0; border-right: none; border-bottom: none; }
+        &.top-right { top: 0; right: 0; border-left: none; border-bottom: none; }
+        &.bottom-left { bottom: 0; left: 0; border-right: none; border-top: none; }
+        &.bottom-right { bottom: 0; right: 0; border-left: none; border-top: none; }
+      }
+
+      .scan-line {
+        width: 100%; height: 2px; background: red;
+        position: absolute; top: 0;
+        box-shadow: 0 0 10px red;
+        animation: moveLine 2s infinite linear;
+      }
+    }
+  }
+
+  .status-overlay {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    z-index: 10;
+    
+    &.success { background: rgba(46, 125, 50, 0.95); }
+    &.error { background: rgba(198, 40, 40, 0.95); }
+
+    .status-content {
+      text-align: center;
+      .icon { font-size: 5rem; margin-bottom: 20px; }
+      h2 { font-size: 2.5rem; font-weight: 900; }
+      .passenger { font-size: 1.5rem; margin-bottom: 10px; }
+      .seat { font-size: 2rem; color: $mobili-yellow; font-weight: bold; }
+      button { 
+        margin-top: 30px; padding: 15px 40px; 
+        border: none; border-radius: 50px; 
+        font-weight: bold; font-size: 1.1rem;
+        background: white; color: black;
+      }
+    }
+  }
+}
+
+@keyframes moveLine {
+  0% { top: 0; }
+  100% { top: 100%; }
+}
