@@ -1,40 +1,60 @@
-<div class="container text-center mt-5" *ngIf="!loading">
-    <div class="card shadow-lg p-5">
-        <div class="success-icon mb-4">
-            <i class="fas fa-check-circle text-success" style="font-size: 5rem;"></i>
+<div class="success-container" *ngIf="!loading">
+    <div class="card-mobili text-center">
+
+        <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
         </div>
 
-        <h1 class="display-4">Paiement Réussi !</h1>
-        <p class="lead">Merci pour votre confiance. Votre voyage est confirmé.</p>
+        <h1 class="display-4-mobili">Paiement Réussi !</h1>
+        <p class="text-muted">Votre voyage <strong>Mobili</strong> est maintenant confirmé.</p>
 
-        <div class="alert alert-info mt-4" *ngIf="bookingDetails">
-            <h5>Récapitulatif de la réservation #{{bookingId}}</h5>
-            <hr>
-            <p><strong>Trajet :</strong> {{bookingDetails.trip.departureCity}} ➔ {{bookingDetails.trip.arrivalCity}}</p>
+        <div class="recap-ticket" *ngIf="bookingDetails">
+            <h5>DÉTAILS DE LA RÉSERVATION</h5>
 
-            <p *ngIf="bookingDetails.seatNumbers">
-                <strong>Sièges réservés :</strong>
-                <span class="badge bg-primary me-1" *ngFor="let seat of bookingDetails.seatNumbers">
-                    {{seat}}
+            <div class="info-line">
+                <span class="label">Référence</span>
+                <span class="value">{{bookingDetails.reference}}</span>
+            </div>
+
+            <div class="info-line">
+                <span class="label">Trajet</span>
+                <span class="value">{{bookingDetails.departureCity}} ➔ {{bookingDetails.arrivalCity}}</span>
+            </div>
+
+            <div class="info-line">
+                <span class="label">Date de départ</span>
+                <span class="value">{{bookingDetails.departureDateTime | date:'dd MMM yyyy à HH:mm'}}</span>
+            </div>
+
+            <div class="info-line" *ngIf="bookingDetails.seatNumbers?.length">
+                <span class="label">Vos places</span>
+                <span class="badge-seat">
+                    Siège {{bookingDetails.seatNumbers.join(', ')}}
                 </span>
-            </p>
+            </div>
 
-            <p><strong>Montant payé :</strong> {{bookingDetails.totalPrice}} FCFA</p>
+            <div class="info-line border-0 mt-3">
+                <span class="label">Total payé</span>
+                <span class="price-tag">{{bookingDetails.totalPrice | number}} FCFA</span>
+            </div>
         </div>
 
-        <div class="mt-5">
-            <button class="btn btn-primary btn-lg me-3" routerLink="/tickets">
-                <i class="fas fa-ticket-alt"></i> Voir mes tickets
-            </button>
-            <button class="btn btn-outline-secondary btn-lg" routerLink="/">
-                Retour à l'accueil
-            </button>
+        <div class="btn-group-mobili">
+            <a class="btn-mobili btn-primary-mobili" routerLink="/my-account/my-tickets">
+                <i class="fas fa-ticket-alt me-2"></i> Télécharger mes tickets
+            </a>
+            <a class="btn-mobili btn-outline-mobili" routerLink="/">
+                <i class="fas fa-home me-2"></i> Retour à l'accueil
+            </a>
         </div>
     </div>
 </div>
 
-<div class="text-center mt-5" *ngIf="loading">
-    <div class="spinner-border text-primary" role="status"></div>
-    <h4 class="mt-3">Finalisation de votre réservation...</h4>
-    <p class="text-muted">Nous confirmons votre paiement auprès de l'opérateur.</p>
+<div class="success-container" *ngIf="loading">
+    <div class="text-center">
+        <div class="spinner-border text-primary" style="width: 3.5rem; height: 3.5rem; color: #FFCC00 !important;"
+            role="status"></div>
+        <h2 class="mt-4 fw-bold" style="color: #092990;">Finalisation en cours...</h2>
+        <p class="text-muted">Nous confirmons votre réservation auprès de FedaPay.</p>
+    </div>
 </div>

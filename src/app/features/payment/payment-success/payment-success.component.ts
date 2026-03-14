@@ -1,7 +1,8 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Pour *ngIf et *ngFor
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'; // Pour routerLink
 import { BookingService } from '../../../core/services/booking/booking.service';
+
 
 @Component({
   selector: 'app-payment-success',
@@ -14,6 +15,7 @@ export class PaymentSuccessComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private bookingService = inject(BookingService);
+  private cdr = inject(ChangeDetectorRef);
 
   bookingId: number | null = null;
   loading = true;
@@ -43,17 +45,19 @@ export class PaymentSuccessComponent implements OnInit {
     this.bookingService.getBookingById(this.bookingId).subscribe({
       next: (data) => {
         this.bookingDetails = data;
+        console.log('Vérification status:', data.status);
 
-        // POLLING : Si le Webhook n'a pas encore validé, on attend 2s
         if (data.status === 'PENDING') {
           setTimeout(() => this.loadBookingDetails(), 2000);
         } else {
-          this.loading = false; // Affiche enfin la carte de succès
+          this.loading = false;
+          this.cdr.detectChanges(); // <--- Force Angular à voir que loading est false
+          console.log('Loading est maintenant :', this.loading);
         }
       },
       error: (err) => {
-        console.error('Erreur chargement réservation', err);
         this.loading = false;
+        this.cdr.detectChanges();
       },
     });
   }

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { HeaderComponent } from '../src/app/layout/header/header.component'; // L'erreur va disparaître !
-import { FooterComponent } from '../src/app/layout/footer/footer.component';
+import { HeaderComponent } from '../app/layout/header/header.component'; // L'erreur va disparaître !
+import { FooterComponent } from '../app/layout/footer/footer.component';
 
 @Component({
   selector: 'app-root',
