@@ -48,4 +48,10 @@ export class BookingService {
   getBookingById(id: number): Observable<any> {
     return this.http.get<any>(`${this.API_URL}/${id}`);
   }
+
+  // Dans ton BookingService.ts
+  getFedaPayUrl(bookingId: number): Observable<{ url: string }> {
+    // On met juste /payments car l'intercepteur va ajouter le reste
+    return this.http.post<{ url: string }>(`/payments/checkout/${bookingId}`, {});
+  }
 }

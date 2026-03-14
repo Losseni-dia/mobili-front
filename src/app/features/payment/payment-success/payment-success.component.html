@@ -1,0 +1,40 @@
+<div class="container text-center mt-5" *ngIf="!loading">
+    <div class="card shadow-lg p-5">
+        <div class="success-icon mb-4">
+            <i class="fas fa-check-circle text-success" style="font-size: 5rem;"></i>
+        </div>
+
+        <h1 class="display-4">Paiement Réussi !</h1>
+        <p class="lead">Merci pour votre confiance. Votre voyage est confirmé.</p>
+
+        <div class="alert alert-info mt-4" *ngIf="bookingDetails">
+            <h5>Récapitulatif de la réservation #{{bookingId}}</h5>
+            <hr>
+            <p><strong>Trajet :</strong> {{bookingDetails.trip.departureCity}} ➔ {{bookingDetails.trip.arrivalCity}}</p>
+
+            <p *ngIf="bookingDetails.seatNumbers">
+                <strong>Sièges réservés :</strong>
+                <span class="badge bg-primary me-1" *ngFor="let seat of bookingDetails.seatNumbers">
+                    {{seat}}
+                </span>
+            </p>
+
+            <p><strong>Montant payé :</strong> {{bookingDetails.totalPrice}} FCFA</p>
+        </div>
+
+        <div class="mt-5">
+            <button class="btn btn-primary btn-lg me-3" routerLink="/tickets">
+                <i class="fas fa-ticket-alt"></i> Voir mes tickets
+            </button>
+            <button class="btn btn-outline-secondary btn-lg" routerLink="/">
+                Retour à l'accueil
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="text-center mt-5" *ngIf="loading">
+    <div class="spinner-border text-primary" role="status"></div>
+    <h4 class="mt-3">Finalisation de votre réservation...</h4>
+    <p class="text-muted">Nous confirmons votre paiement auprès de l'opérateur.</p>
+</div>

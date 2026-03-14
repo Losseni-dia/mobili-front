@@ -36,10 +36,10 @@
         </div>
 
         <button class="btn-pay" [disabled]="isProcessing()" (click)="confirmAndPay()">
-            {{ isProcessing() ? 'Traitement en cours...' : 'Procéder au paiement' }}
+            {{ isProcessing() ? 'Redirection vers FedaPay...' : 'Payer via Mobile Money / Wave' }}
         </button>
-
-        <p class="secure-msg">🔒 Paiement sécurisé via votre portefeuille Mobili</p>
+        
+        <p class="secure-msg">🔒 Paiement sécurisé via FedaPay</p>
     </div>
     } @else {
     <div class="loader">Récupération de la réservation...</div>

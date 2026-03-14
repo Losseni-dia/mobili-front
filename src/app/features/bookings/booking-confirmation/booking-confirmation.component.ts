@@ -33,18 +33,25 @@ export class BookingConfirmationComponent implements OnInit {
   }
 
   confirmAndPay() {
-    this.isProcessing.set(true);
-    const id = this.booking().id;
+    const rawId = this.booking().id;
 
-    this.bookingService.confirmPayment(id).subscribe({
-      next: () => {
-        // ✅ On redirige vers /booking/my-tickets (Route cohérente avec tes nouveaux dossiers)
-        this.router.navigate(['/booking/my-tickets']);
+    // FORCE la conversion en nombre simple pour éviter d'envoyer "27,414088"
+    const cleanId = Number(Array.isArray(rawId) ? rawId[0] : rawId);
+
+    if (isNaN(cleanId)) {
+      alert("Erreur d'identification de la réservation.");
+      return;
+    }
+
+    this.isProcessing.set(true);
+
+    this.bookingService.getFedaPayUrl(cleanId).subscribe({
+      next: (response) => {
+        window.location.href = response.url;
       },
       error: (err) => {
-        console.error('Erreur paiement', err);
         this.isProcessing.set(false);
-        // Tu pourrais ici afficher un petit message d'erreur si le solde est insuffisant
+        alert('Erreur technique. Veuillez réessayer.');
       },
     });
   }

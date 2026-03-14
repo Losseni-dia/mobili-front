@@ -154,5 +154,19 @@ export const routes: Routes = [
     ],
   },
 
+  {
+    path: 'payment',
+    canActivate: [authGuard],
+    children: [
+      {
+        path: 'success', // URL finale: /payment/success
+        loadComponent: () =>
+          import('./features/payment/payment-success/payment-success.component').then(
+            (m) => m.PaymentSuccessComponent,
+          ),
+      },
+    ],
+  },
+
   { path: '**', redirectTo: '' },
 ];
