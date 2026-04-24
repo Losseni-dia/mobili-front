@@ -2,7 +2,7 @@ export const CONFIGURATION_DATA = {
   environments: [
     {
       env: 'local',
-      domain: ['localhost:4200']
+      domain: ['localhost:4200', '127.0.0.1:4200']
     },
     {
       env: 'dev',

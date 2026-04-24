@@ -1,47 +1,104 @@
-<div class="confirmation-container">
-    @if (booking()) {
-    <div class="summary-card">
-        <div class="header">
-            <h2>Récapitulatif de votre voyage</h2>
-            <span class="ref">Réf: {{ booking().reference }}</span>
-        </div>
+<div class="confirmation-page">
+    @if (booking(); as bookingData) {
+        <div class="ticket">
+            <header class="ticket-top">
+                <div class="brand">
+                    <span class="dot"></span>
+                    <span class="brand-name">MOBILI</span>
+                </div>
+                <div class="ref-block">
+                    <span class="ref-label">Référence</span>
+                    <span class="ref-value">{{ bookingData.reference }}</span>
+                </div>
+            </header>
 
-        <div class="trip-info">
-            <div class="route">
-                <span class="city">{{ booking().departureCity }}</span>
-                <span class="arrow">→</span>
-                <span class="city">{{ booking().arrivalCity }}</span>
-            </div>
-            <p class="date">Départ le {{ booking().departureDateTime | date:'dd/MM/yyyy à HH:mm' }}</p>
-        </div>
+            <section class="route">
+                <div class="endpoint">
+                    <span class="endpoint-label">Je monte à</span>
+                    <span class="endpoint-city">{{ boardingLabel() }}</span>
+                </div>
 
-        <div class="seats-details">
-            <h3>Sièges réservés ({{ booking().numberOfSeats }})</h3>
-            <ul>
-                <li>
-                    <strong>Sièges:</strong> {{ booking().seatNumbers.join(', ') }}
-                </li>
-            </ul>
-        </div>
+                <div class="route-line">
+                    <span class="line"></span>
+                    <span class="bus">🚌</span>
+                    <span class="line"></span>
+                </div>
 
-        <div class="price-section">
-            <div class="row">
-                <span>Prix unitaire</span>
-                <span>{{ booking().totalPrice / booking().numberOfSeats }} FCFA</span>
-            </div>
-            <div class="row total">
-                <span>Total à payer</span>
-                <span>{{ booking().totalPrice }} FCFA</span>
-            </div>
-        </div>
+                <div class="endpoint">
+                    <span class="endpoint-label">Je descends à</span>
+                    <span class="endpoint-city">{{ alightingLabel() }}</span>
+                </div>
+            </section>
 
-        <button class="btn-pay" [disabled]="isProcessing()" (click)="confirmAndPay()">
-            {{ isProcessing() ? 'Redirection vers FedaPay...' : 'Payer via Mobile Money / Wave' }}
-        </button>
-        
-        <p class="secure-msg">🔒 Paiement sécurisé via FedaPay</p>
-    </div>
+            <section class="trip-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Date de départ</span>
+                    <span class="meta-value">
+                        {{ bookingData.departureDateTime | date: 'EEEE d MMMM y' }}
+                    </span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Heure</span>
+                    <span class="meta-value">
+                        {{ bookingData.departureDateTime | date: 'HH:mm' }}
+                    </span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Trajet complet</span>
+                    <span class="meta-value small">
+                        {{ bookingData.departureCity }} → {{ bookingData.arrivalCity }}
+                    </span>
+                </div>
+            </section>
+
+            <div class="perforation"></div>
+
+            <section class="passengers">
+                <h3>Passagers ({{ bookingData.numberOfSeats }})</h3>
+                <ul class="passenger-list">
+                    @for (p of passengerLines(); track p.seat) {
+                        <li>
+                            <span class="seat-badge">Siège {{ p.seat }}</span>
+                            <span class="passenger-name">{{ p.name }}</span>
+                        </li>
+                    }
+                </ul>
+            </section>
+
+            <section class="price-block">
+                <div class="price-row">
+                    <span>Prix par place</span>
+                    <strong>{{ unitPrice() | number: '1.0-0' }} FCFA</strong>
+                </div>
+                <div class="price-row">
+                    <span>Nombre de places</span>
+                    <strong>×{{ bookingData.numberOfSeats }}</strong>
+                </div>
+                <div class="price-row total">
+                    <span>Total à payer</span>
+                    <strong>{{ totalPrice() | number: '1.0-0' }} FCFA</strong>
+                </div>
+            </section>
+
+            <button class="btn-pay" [disabled]="isProcessing()" (click)="confirmAndPay()">
+                @if (isProcessing()) {
+                    <span class="spinner-sm"></span>
+                    Redirection vers FedaPay…
+                } @else {
+                    <span>Payer maintenant</span>
+                    <span class="pay-hint">Mobile Money · Wave · Orange Money</span>
+                }
+            </button>
+
+            <footer class="ticket-bottom">
+                <span class="secure">🔒 Paiement sécurisé via FedaPay</span>
+                <a class="back-link" routerLink="/">Retour à l'accueil</a>
+            </footer>
+        </div>
     } @else {
-    <div class="loader">Récupération de la réservation...</div>
+        <div class="loader">
+            <div class="spinner"></div>
+            <p>Chargement de ta réservation…</p>
+        </div>
     }
 </div>

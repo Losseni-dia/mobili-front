@@ -1,9 +1,13 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { TripService} from '../../../../core/services/trip/trip.service';
+import { startWith } from 'rxjs';
+
+import { buildTripCityLabels, lastStopIndexFromLabels } from '../../../../core/utils/trip-city-labels.util';
 import { AuthService } from '../../../../core/services/auth/auth.service';
+import { TripLegFarePayload, TripService } from '../../../../core/services/trip/trip.service';
+import { NotificationService } from '../../../../core/services/notification/notification.service';
 
 @Component({
   selector: 'app-trip-edit',
@@ -18,11 +22,38 @@ export class TripEditComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private notification = inject(NotificationService);
 
   tripId!: number;
   selectedFile: File | null = null;
   imagePreview = signal<string | null>(null);
   isLoading = signal(false);
+
+  cityLabelsPreview = signal<string[]>([]);
+  legPrices = signal<number[]>([]);
+
+  legRows = computed(() => {
+    const labs = this.cityLabelsPreview();
+    const prices = this.legPrices();
+    const rows: { index: number; fromLabel: string; toLabel: string; price: number }[] = [];
+    for (let i = 0; i < labs.length - 1; i++) {
+      rows.push({
+        index: i,
+        fromLabel: labs[i] || '—',
+        toLabel: labs[i + 1] || '—',
+        price: prices[i] ?? 0,
+      });
+    }
+    return rows;
+  });
+
+  legsTotal = computed(() => this.legPrices().reduce((a, b) => a + b, 0));
+
+  needsOriginDestinationPrice = computed(() => this.legRows().length > 1);
+  firstCityLabel = computed(() => this.cityLabelsPreview()[0]?.trim() || 'Départ');
+  lastCityLabel = computed(
+    () => this.cityLabelsPreview()[this.cityLabelsPreview().length - 1]?.trim() || 'Arrivée',
+  );
 
   tripForm = this.fb.group({
     departureCity: ['', Validators.required],
@@ -31,43 +62,123 @@ export class TripEditComponent implements OnInit {
     vehiculePlateNumber: ['', Validators.required],
     boardingPoint: ['', Validators.required],
     stops: [''],
-    price: [null as number | null, [Validators.required, Validators.min(0)]],
+    price: [null as number | null, [Validators.min(0)]],
+    originDestinationPrice: [null as number | null, [Validators.min(0)]],
     availableSeats: [null as number | null, [Validators.required, Validators.min(1)]],
-    vehicleType: ['Bus classique', Validators.required],
+    vehicleType: ['', Validators.required],
   });
 
   ngOnInit() {
     this.tripId = Number(this.route.snapshot.paramMap.get('id'));
+
+    this.syncLegPrices();
+    this.tripForm.valueChanges.pipe(startWith(this.tripForm.value)).subscribe(() => this.syncLegPrices());
+
     this.loadTripData();
+
+    this.tripForm.get('vehicleType')?.valueChanges.subscribe((type) => {
+      const capacityMap: { [key: string]: number } = {
+        'Car 70 places': 70,
+        Minibus: 24,
+        'Massa normal': 18,
+        'Massa 6 roues': 22,
+        'Bus classique': 50,
+        'Bus Classique': 50,
+        'Bus Climatisé': 50,
+        'Car Climatisé': 70,
+        'Car Classique': 70,
+      };
+      if (type && capacityMap[type]) {
+        this.tripForm.patchValue({ availableSeats: capacityMap[type] });
+      }
+    });
+  }
+
+  onLegPriceInput(legIndex: number, ev: Event) {
+    const el = ev.target as HTMLInputElement;
+    const v = Number(el.value);
+    const next = [...this.legPrices()];
+    next[legIndex] = Number.isNaN(v) || v < 0 ? 0 : v;
+    this.legPrices.set(next);
   }
 
   loadTripData() {
     this.tripService.getTripById(this.tripId).subscribe({
-      next: (trip: any) => {
-        // On utilise any temporairement pour debugger
-        console.log('Réponse complète du trajet:', trip);
+      next: (trip: {
+        departureCity: string;
+        arrivalCity: string;
+        departureDateTime?: string;
+        vehiculePlateNumber: string;
+        boardingPoint: string;
+        moreInfo?: string;
+        price: number;
+        originDestinationPrice?: number | null;
+        availableSeats: number;
+        vehicleType: string;
+        vehicleImageUrl?: string;
+        legFares?: { fromStopIndex: number; toStopIndex: number; price: number }[];
+      }) => {
+        if (trip.legFares && trip.legFares.length > 0) {
+          const sorted = [...trip.legFares].sort((a, b) => a.fromStopIndex - b.fromStopIndex);
+          this.legPrices.set(sorted.map((f) => f.price));
+        } else {
+          this.legPrices.set([]);
+        }
 
-        this.tripForm.patchValue({
-          departureCity: trip.departureCity,
-          arrivalCity: trip.arrivalCity,
-          departureDateTime: trip.departureDateTime?.slice(0, 16),
-          vehiculePlateNumber: trip.vehiculePlateNumber,
-          boardingPoint: trip.boardingPoint,
-          stops: trip.moreInfo,
-          price: trip.price,
-          availableSeats: trip.availableSeats,
-          vehicleType: trip.vehicleType || trip.type,
-        });
+        this.tripForm.patchValue(
+          {
+            departureCity: trip.departureCity,
+            arrivalCity: trip.arrivalCity,
+            departureDateTime: trip.departureDateTime?.slice(0, 16),
+            vehiculePlateNumber: trip.vehiculePlateNumber,
+            boardingPoint: trip.boardingPoint,
+            stops: trip.moreInfo,
+            price: trip.price,
+            originDestinationPrice:
+              trip.originDestinationPrice != null
+                ? trip.originDestinationPrice
+                : trip.legFares && trip.legFares.length > 1
+                  ? trip.price
+                  : null,
+            availableSeats: trip.availableSeats,
+            vehicleType: trip.vehicleType,
+          },
+          { emitEvent: false },
+        );
 
         if (trip.vehicleImageUrl) {
           this.imagePreview.set(`${this.authService.IMAGE_BASE_URL}${trip.vehicleImageUrl}`);
         }
+
+        this.syncLegPrices();
       },
     });
   }
 
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
+  private syncLegPrices() {
+    const v = this.tripForm.getRawValue();
+    const labels = buildTripCityLabels(
+      v.departureCity ?? '',
+      v.arrivalCity ?? '',
+      v.stops ?? '',
+    );
+    this.cityLabelsPreview.set(labels);
+
+    const last = lastStopIndexFromLabels(labels);
+
+    if (last <= 0) {
+      this.legPrices.set([]);
+    } else if (this.legPrices().length !== last) {
+      const prev = this.legPrices();
+      this.legPrices.set(
+        Array.from({ length: last }, (_, i) => (i < prev.length ? prev[i]! : 0)),
+      );
+    }
+  }
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
     if (file) {
       this.selectedFile = file;
       const reader = new FileReader();
@@ -78,20 +189,68 @@ export class TripEditComponent implements OnInit {
 
   onSubmit() {
     if (this.tripForm.invalid || this.isLoading()) return;
+
+    const labels = buildTripCityLabels(
+      this.tripForm.value.departureCity ?? '',
+      this.tripForm.value.arrivalCity ?? '',
+      this.tripForm.value.stops ?? '',
+    );
+    const last = lastStopIndexFromLabels(labels);
+    const legs = this.legPrices();
+    if (last > 0) {
+      if (legs.length !== last || legs.some((p) => p == null || p <= 0 || Number.isNaN(p))) {
+        this.notification.show('Indiquez un prix strictement positif pour chaque tronçon.', 'error');
+        return;
+      }
+    } else {
+      const p = Number(this.tripForm.value.price);
+      if (p == null || p <= 0 || Number.isNaN(p)) {
+        this.notification.show('Indiquez un prix valide pour le trajet.', 'error');
+        return;
+      }
+    }
+
     this.isLoading.set(true);
 
     const formData = new FormData();
     const formValue = this.tripForm.value;
     const currentUser = this.authService.currentUser();
 
-    const tripPayload = {
-      id: this.tripId, // Très important pour l'update
-      partnerId: currentUser?.partnerId,
-      ...formValue,
+    const dateInput = new Date(formValue.departureDateTime!);
+    const offset = dateInput.getTimezoneOffset() * 60000;
+    const localISOTime = new Date(dateInput.getTime() - offset).toISOString().slice(0, 19);
+
+    const sumLegs =
+      last > 0 && legs.length === last ? legs.reduce((a, b) => a + b, 0) : Number(formValue.price ?? 0);
+    const mainTripPrice = last > 1 ? Number(formValue.originDestinationPrice) : sumLegs;
+
+    const tripPayload: Record<string, unknown> = {
+      id: this.tripId,
+      partnerId: currentUser?.partnerId ?? currentUser?.id,
+      departureCity: formValue.departureCity,
+      arrivalCity: formValue.arrivalCity,
+      boardingPoint: formValue.boardingPoint,
+      vehiculePlateNumber: formValue.vehiculePlateNumber,
+      vehicleType: formValue.vehicleType,
+      departureDateTime: localISOTime,
+      price: mainTripPrice,
+      totalSeats: formValue.availableSeats,
+      availableSeats: formValue.availableSeats,
       moreInfo: formValue.stops,
-      // Date gérée comme dans AddTrip
-      departureDateTime: new Date(formValue.departureDateTime!).toISOString().slice(0, 19),
     };
+    if (last > 1) {
+      tripPayload['originDestinationPrice'] = Number(formValue.originDestinationPrice);
+    }
+
+    if (last > 0 && legs.length === last) {
+      tripPayload['legFares'] = legs.map((p, i) => ({
+        fromStopIndex: i,
+        toStopIndex: i + 1,
+        price: p,
+      }));
+    } else {
+      tripPayload['legFares'] = [];
+    }
 
     formData.append('trip', new Blob([JSON.stringify(tripPayload)], { type: 'application/json' }));
     if (this.selectedFile) {

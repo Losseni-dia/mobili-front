@@ -1,68 +1,122 @@
-@import '../../../styles.scss';
+@use "sass:color";
+@import '../../styles/variables';
+@import '../../styles/mixins';
 
 .main-footer {
-    background-color: $white;
-    border-top: 1px solid #eee;
-    margin-top: auto; // Pousse le footer vers le bas
+  margin-top: auto;
+  background: $gradient-hero;
+  color: rgba($white, 0.9);
+  position: relative;
+  overflow: hidden;
 
-    .quick-info {
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 10% 0%, rgba($mobili-yellow, 0.18), transparent 50%),
+      radial-gradient(circle at 90% 110%, rgba($mobili-yellow, 0.12), transparent 55%);
+    pointer-events: none;
+  }
+
+  .quick-info {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    padding: 50px 24px;
+    max-width: $container-max;
+    margin: 0 auto;
+
+    .info-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 20px;
+      background: rgba($white, 0.07);
+      border: 1px solid rgba($white, 0.12);
+      border-radius: $radius-md;
+      backdrop-filter: blur(8px);
+      transition: transform $t-base, background $t-base, border-color $t-base;
+
+      &:hover {
+        transform: translateY(-3px);
+        background: rgba($white, 0.12);
+        border-color: rgba($mobili-yellow, 0.5);
+      }
+
+      .icon {
+        font-size: 1.6rem;
+        width: 48px;
+        height: 48px;
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 20px;
-        padding: 40px 20px;
-        max-width: 1200px;
-        margin: 0 auto;
+        place-items: center;
+        border-radius: $radius-sm;
+        background: rgba($mobili-yellow, 0.2);
+        color: $mobili-yellow;
+        flex-shrink: 0;
+      }
 
-        .info-card {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            background: #f9fafb;
-            border-radius: 12px;
+      .text {
+        display: flex;
+        flex-direction: column;
 
-            .icon {
-                font-size: 1.5rem;
-            }
-
-            .text {
-                display: flex;
-                flex-direction: column;
-
-                strong {
-                    color: $mobili-blue;
-                    font-size: 0.9rem;
-                }
-
-                span {
-                    color: #666;
-                    font-size: 0.75rem;
-                }
-            }
+        strong {
+          color: $white;
+          font-size: 0.95rem;
+          font-weight: 800;
+          letter-spacing: 0.2px;
         }
-    }
 
-    .footer-bottom {
-        background-color: #f3f4f6;
-        padding: 20px;
-        text-align: center;
-        font-size: 0.8rem;
-        color: #999;
-
-        .footer-links {
-            margin-top: 10px;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-
-            a {
-                color: #666;
-                text-decoration: none;
-
-                &:hover {
-                    text-decoration: underline;
-                }
-            }
+        span {
+          color: rgba($white, 0.7);
+          font-size: 0.78rem;
         }
+      }
     }
+  }
+
+  .footer-bottom {
+    position: relative;
+    padding: 22px 24px;
+    text-align: center;
+    font-size: 0.82rem;
+    color: rgba($white, 0.7);
+    border-top: 1px solid rgba($white, 0.1);
+
+    p { margin-bottom: 10px; }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 28px;
+
+      a {
+        color: rgba($white, 0.85);
+        font-weight: 600;
+        text-decoration: none;
+        position: relative;
+        transition: color $t-base;
+
+        &::after {
+          content: '';
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: -4px;
+          height: 2px;
+          background: $mobili-yellow;
+          transform: scaleX(0);
+          transform-origin: center;
+          transition: transform $t-base;
+        }
+
+        &:hover {
+          color: $white;
+
+          &::after { transform: scaleX(1); }
+        }
+      }
+    }
+  }
 }

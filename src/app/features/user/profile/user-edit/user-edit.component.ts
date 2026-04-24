@@ -3,6 +3,7 @@ import { CommonModule, Location } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth/auth.service';
+import { NotificationService } from '../../../../core/services/notification/notification.service';
 
 @Component({
   selector: 'app-user-edit',
@@ -16,6 +17,7 @@ export class UserEditComponent implements OnInit {
   public authService = inject(AuthService);
   private router = inject(Router);
   private location = inject(Location);
+  private notificationService = inject(NotificationService);
 
   isLoading = signal(false);
   avatarPreview = signal<string | null>(null);
@@ -93,17 +95,16 @@ export class UserEditComponent implements OnInit {
         this.isLoading.set(false);
 
         if (oldLogin !== newLogin) {
-          // 💡 Le login a changé ! On doit se reconnecter pour avoir un nouveau JWT
-          alert('Votre login a changé. Veuillez vous reconnecter.');
+          this.notificationService.show('Votre login a changé. Veuillez vous reconnecter.', 'info');
           this.authService.logout();
           this.router.navigate(['/auth/login']);
         } else {
-          // Le login n'a pas changé, on peut juste retourner au profil
-          this.router.navigate(['/my-account/profile']);
+          const inGare = this.router.url.includes('/gare/');
+          this.router.navigate([inGare ? '/gare/profil' : '/my-account/profile']);
         }
       },
-      error: (err) => {
-        console.error('Erreur MAJ profil', err);
+      error: () => {
+        this.notificationService.show('Erreur lors de la mise à jour du profil.', 'error');
         this.isLoading.set(false);
       },
     });

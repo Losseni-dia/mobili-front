@@ -12,6 +12,10 @@ export const apiInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
+  if (!apiUrl) {
+    throw new Error('Configuration invalide: apiUrl manquant pour les appels HTTP.');
+  }
+
   const apiReq = req.clone({
     url: `${apiUrl}${req.url}`
   });

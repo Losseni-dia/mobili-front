@@ -1,37 +1,54 @@
 <div class="home-page">
     <section class="hero">
-        <div class="search-card">
-            <form class="search-form" [formGroup]="searchForm">
-                <div class="input-block">
-                    <label>Départ</label>
-                    <input type="text" formControlName="departure" placeholder="D'où partez-vous ?">
-                </div>
-
-                <div class="input-block">
-                    <label>Arrivée</label>
-                    <input type="text" formControlName="arrival" placeholder="Où allez-vous ?">
-                </div>
-
-                <div class="input-block">
-                    <label>Date</label>
-                    <input type="date" formControlName="date">
-                </div>
-
-                <button type="button" (click)="applyFilter()" class="btn-main">Rechercher</button>
-            </form>
-        </div>
+        <h1 class="hero-title">
+            <span class="accent">Mobili</span><br>
+            Voyagez seulement...
+        </h1>
+        <p class="hero-subtitle">
+            Réserve ta place en quelques secondes, paie avec Wave, MTN Money, Orange Money etc, et embarque l'esprit tranquille.
+        </p>
     </section>
+
+    <div class="search-card">
+        <form class="search-form" [formGroup]="searchForm">
+            <div class="input-block">
+                <label>Départ</label>
+                <input type="text" formControlName="departure" placeholder="D'où partez-vous ?">
+            </div>
+
+            <div class="input-block">
+                <label>Arrivée</label>
+                <input type="text" formControlName="arrival" placeholder="Où allez-vous ?">
+            </div>
+
+            <div class="input-block">
+                <label>Date</label>
+                <input type="date" formControlName="date">
+            </div>
+        </form>
+    </div>
 
     <section class="trips-section container">
         <h2>Trajets disponibles ({{ filteredTrips.length }})</h2>
+        @if (loadingTrips) {
+        <p class="loading-hint">Mise à jour des résultats…</p>
+        }
         <div class="trips-grid">
-            <div class="trip-card" *ngFor="let trip of filteredTrips">
+            @for (trip of filteredTrips; track trip.id) {
+            <div class="trip-card">
                 <div class="trip-image">
-                    <img *ngIf="trip.vehicleImageUrl; else noPhoto" [src]="IMAGE_BASE_URL + trip.vehicleImageUrl"
-                        (error)="$any($event.target).src = 'assets/images/default-vehicle.png'" alt="Véhicule">
-                    <ng-template #noPhoto>
-                        <div class="placeholder-img">🚌</div>
-                    </ng-template>
+                    <div class="trip-image__inner">
+                        @if (trip.vehicleImageUrl) {
+                        <img
+                            class="trip-image__media"
+                            [src]="IMAGE_BASE_URL + trip.vehicleImageUrl"
+                            (error)="$any($event.target).src = 'assets/images/default-vehicle.png'"
+                            alt="Photo du véhicule"
+                            loading="lazy" />
+                        } @else {
+                        <div class="placeholder-img" aria-hidden="true">🚌</div>
+                        }
+                    </div>
                 </div>
 
                 <div class="trip-details">
@@ -65,7 +82,7 @@
                 </div>
 
                 <div class="trip-action">
-                    <div class="price-tag">{{ trip.price | number }} <span>FCFA</span></div>
+                    <div class="price-tag">{{ listPrice(trip) | number }} <span>FCFA</span></div>
 
                     <div class="seats-left" [class.low]="trip.availableSeats < 5">
                         @if (trip.availableSeats > 0) {
@@ -75,12 +92,16 @@
                         }
                     </div>
 
-                    <button class="btn-book" [routerLink]="['/booking/trip', trip.id]"
+                    <button
+                        type="button"
+                        class="btn-book"
+                        (click)="openBooking(trip)"
                         [disabled]="trip.availableSeats === 0">
                         Réserver
                     </button>
                 </div>
             </div>
+            }
         </div>
 
         <div class="no-results" *ngIf="filteredTrips.length === 0">

@@ -78,6 +78,11 @@
                 <button (click)="downloadTicket(ticket)" class="btn-download">
                     📥 Enregistrer l'image (Galerie)
                 </button>
+                @if (ticket.tripId) {
+                    <a class="btn-channel" [routerLink]="['/my-account/trip-channel', ticket.tripId]">
+                        💬 Annonces du voyage
+                    </a>
+                }
             </div>
         </div>
         }

@@ -1,16 +1,70 @@
 <div class="booking-layout">
     <section class="seat-selection">
-        <h2>Choisissez vos places</h2>
+        <h2>Choisis ton trajet et tes places</h2>
 
-        @if (tripDetails()) {
-        <app-seat-picker [totalSeats]="tripDetails().availableSeats" [occupiedSeats]="occupiedSeats()"
-            (seatToggle)="onSeatToggle($event)">
-        </app-seat-picker>
+        @if (tripDetails(); as tripData) {
+            <div class="segment-picker">
+                <p class="segment-hint">
+                    Ce voyage passe par plusieurs villes. Choisis où tu montes et où tu descends :
+                    le prix s'adaptera automatiquement.
+                </p>
+
+                <div class="segment-grid">
+                    <label class="segment-field">
+                        <span>Je monte à</span>
+                        <select [value]="boardingIndex()" (change)="onBoardingChange($event)">
+                            @for (opt of boardingOptions(); track opt.index) {
+                                <option [value]="opt.index">{{ opt.label }}</option>
+                            }
+                        </select>
+                    </label>
+
+                    <label class="segment-field">
+                        <span>Je descends à</span>
+                        <select [value]="alightingIndex()" (change)="onAlightingChange($event)">
+                            @for (opt of alightingOptions(); track opt.index) {
+                                <option [value]="opt.index">{{ opt.label }}</option>
+                            }
+                        </select>
+                    </label>
+                </div>
+
+                @if (legFares().length > 0 && stopLabels().length > 2) {
+                    <details class="fares-details">
+                        <summary>Voir le tarif de chaque étape</summary>
+                        <ul class="fares-list">
+                            @for (fare of legFares(); track fare.fromStopIndex) {
+                                <li>
+                                    <strong>{{ stopLabels()[fare.fromStopIndex] }}</strong>
+                                    <span> → </span>
+                                    <strong>{{ stopLabels()[fare.toStopIndex] }}</strong>
+                                    <span class="fare-price">{{ fare.price | number: '1.0-0' }} FCFA</span>
+                                </li>
+                            }
+                        </ul>
+                    </details>
+                }
+
+                <div class="segment-price">
+                    @if (hasValidSegment()) {
+                        <span>Prix pour 1 place :</span>
+                        <strong>{{ pricePerSeat() | number: '1.0-0' }} FCFA</strong>
+                    } @else {
+                        <span class="warn">Choisis un arrêt de descente après celui d'embarquement.</span>
+                    }
+                </div>
+            </div>
+
+            <app-seat-picker
+                [totalSeats]="tripData.totalSeats"
+                [occupiedSeats]="occupiedSeats()"
+                (seatToggle)="onSeatToggle($event)"
+            />
         } @else {
-        <div class="bus-loader">
-            <div class="spinner"></div>
-            <p>Récupération du plan de bus officiel...</p>
-        </div>
+            <div class="bus-loader">
+                <div class="spinner"></div>
+                <p>Chargement du trajet…</p>
+            </div>
         }
     </section>
 
@@ -20,32 +74,48 @@
         <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()">
             <div formArrayName="passengerNames">
                 @for (seat of bookingForm.get('selectedSeats')?.value; track seat; let i = $index) {
-                <div class="input-field">
-                    <label>Nom du passager - Siège <strong>{{ seat }}</strong></label>
-                    <input [formControlName]="i" placeholder="Entrez le nom complet">
-                </div>
+                    <div class="input-field">
+                        <label>Nom du passager - Siège <strong>{{ seat }}</strong></label>
+                        <input [formControlName]="i" placeholder="Entrez le nom complet">
+                    </div>
                 } @empty {
-                <div class="empty-msg">
-                    Veuillez cliquer sur un siège pour commencer.
-                </div>
+                    <div class="empty-msg">
+                        Choisis ton segment puis clique sur un siège pour commencer.
+                    </div>
                 }
             </div>
 
             @if (bookingForm.get('selectedSeats')?.value?.length > 0) {
-            <div class="booking-summary">
-                <div class="summary-line">
-                    <span>Places sélectionnées :</span>
-                    <strong>{{ bookingForm.get('selectedSeats')?.value.length }}</strong>
+                <div class="booking-summary">
+                    <div class="summary-line">
+                        <span>Trajet choisi :</span>
+                        <strong>{{ stopLabels()[boardingIndex()] }} → {{ stopLabels()[alightingIndex()] }}</strong>
+                    </div>
+                    <div class="summary-line">
+                        <span>Places sélectionnées :</span>
+                        <strong>{{ bookingForm.get('selectedSeats')?.value.length }}</strong>
+                    </div>
+                    <div class="summary-line">
+                        <span>Prix par place :</span>
+                        <strong>{{ pricePerSeat() | number: '1.0-0' }} FCFA</strong>
+                    </div>
+                    <div class="summary-line total">
+                        <span>Total à payer :</span>
+                        <strong>
+                            {{ (bookingForm.get('selectedSeats')?.value.length * pricePerSeat()) | number: '1.0-0' }} FCFA
+                        </strong>
+                    </div>
                 </div>
-                <div class="summary-line total">
-                    <span>Prix Total :</span>
-                    <strong>{{ (bookingForm.get('selectedSeats')?.value.length * tripPrice()) | number }} FCFA</strong>
-                </div>
-            </div>
             }
 
-            <button type="submit"
-                [disabled]="bookingForm.invalid || (bookingForm.get('selectedSeats')?.value?.length === 0)">
+            <button
+                type="submit"
+                [disabled]="
+                    bookingForm.invalid ||
+                    !hasValidSegment() ||
+                    bookingForm.get('selectedSeats')?.value?.length === 0
+                "
+            >
                 Confirmer la réservation
             </button>
         </form>

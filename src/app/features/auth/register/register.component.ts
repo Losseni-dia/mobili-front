@@ -1,7 +1,8 @@
-import { Component, inject, signal, untracked } from '@angular/core';
+import { Component, inject, OnInit, signal, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { ImagePanDirective } from '../../../shared/directives/image-pan.directive';
 
@@ -12,9 +13,13 @@ import { ImagePanDirective } from '../../../shared/directives/image-pan.directiv
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
+
+  /** Renseigné via ?returnUrl= (ex. flux société → partenaire). */
+  returnUrl: string | null = null;
 
   user = {
     login: '',
@@ -36,6 +41,10 @@ export class RegisterComponent {
   isConfirmTouched = false;
   imgPos = signal({ x: 50, y: 50 });
   imageZoom = signal(1);
+
+  ngOnInit(): void {
+    this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+  }
 
   // Calcule les initiales pour l'avatar par défaut
   getInitials(): string {
@@ -93,7 +102,12 @@ export class RegisterComponent {
 
     this.authService.register(this.user, this.selectedFile).subscribe({
       next: () => {
-        this.router.navigate(['/auth/login'], { queryParams: { registered: 'true' } });
+        this.router.navigate(['/auth/login'], {
+          queryParams: {
+            registered: 'true',
+            ...(this.returnUrl ? { returnUrl: this.returnUrl } : {}),
+          },
+        });
       },
       error: (err) => {
         this.isLoading.set(false);

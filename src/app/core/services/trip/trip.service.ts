@@ -1,20 +1,68 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+
+export interface TripLegFarePayload {
+  fromStopIndex: number;
+  toStopIndex: number;
+  price: number;
+}
+
+/** Brouillon pour POST /trips/price-preview (partenaire / admin). */
+export interface TripPricePreviewDraft {
+  departureCity: string;
+  arrivalCity: string;
+  moreInfo: string;
+  price: number;
+  /** ISO local type `yyyy-MM-ddTHH:mm:ss` (sans offset), optionnel. */
+  departureDateTime?: string | null;
+  /** Tronçons consécutifs : si présent, même logique qu’à la sauvegarde du voyage. */
+  legFares?: TripLegFarePayload[];
+  /**
+   * Prix 1er → dernier arrêt (si 2+ tronçons) : peut différer de la somme des tronçons.
+   * Utilisé pour l’aperçu embarquement=0, descente=dernier.
+   */
+  originDestinationPrice?: number | null;
+}
+
+export interface TripPricePreviewStop {
+  stopIndex: number;
+  cityLabel: string;
+  plannedDepartureAt: string;
+}
+
+export interface TripPricePreviewResponse {
+  pricePerSeat: number;
+  lastStopIndex: number;
+  stops: TripPricePreviewStop[];
+}
+
+export interface TripLegFareResponse {
+  fromStopIndex: number;
+  toStopIndex: number;
+  price: number;
+}
 
 export interface Trip {
   id: number;
   departureCity: string;
   arrivalCity: string;
-  boardingPoint: string; // Vérifie bien ce nom
-  departureDateTime: string; // Ou Date
+  boardingPoint: string;
+  departureDateTime: string;
   price: number;
+  /** Tarif direct premier → dernier arrêt (si renseigné, peut différer de la somme des tronçons). */
+  originDestinationPrice?: number | null;
+  totalSeats: number;
   availableSeats: number;
   vehicleType: string;
-  vehicleImageUrl?: string; // Optionnel car peut être null
-  moreInfo?: string; // Optionnel (villes étapes)
+  vehicleImageUrl?: string;
+  moreInfo?: string;
   status?: string;
   partnerName?: string;
+  stationId?: number;
+  stationName?: string;
+  /** Tarifs enregistrés par le partenaire pour chaque portion consécutive. */
+  legFares?: TripLegFareResponse[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -30,9 +78,18 @@ export class TripService {
     return this.http.get<Trip[]>('/trips');
   }
 
-  // Pour une recherche spécifique via l'API si besoin
-  searchTrips(from: string, to: string, date: string): Observable<Trip[]> {
-    return this.http.get<Trip[]>(`/trips/search?from=${from}&to=${to}&date=${date}`);
+  /**
+   * Recherche segmentée côté API (`GET /trips/search`).
+   * Paramètres alignés sur le backend : `departure`, `arrival`, `date` (optionnelle, ISO yyyy-MM-dd).
+   */
+  searchTrips(departure: string, arrival: string, date: string): Observable<Trip[]> {
+    let params = new HttpParams()
+      .set('departure', departure ?? '')
+      .set('arrival', arrival ?? '');
+    if (date && String(date).trim() !== '') {
+      params = params.set('date', String(date).trim());
+    }
+    return this.http.get<Trip[]>('/trips/search', { params });
   }
 
   getTripById(id: number): Observable<any> {
@@ -47,5 +104,43 @@ export class TripService {
   deleteTrip(id: number): Observable<void> {
     // Utilisation directe de la chaîne pour être raccord avec tes autres méthodes
     return this.http.delete<void>(`/trips/${id}`);
+  }
+
+  getPartnerTrips(): Observable<Trip[]> {
+    return this.http.get<Trip[]>('/trips/my-trips');
+  }
+
+  /**
+   * Aperçu tarif segment : même calcul que la réservation (JWT partenaire ou admin).
+   */
+  previewSegmentPrice(body: {
+    departureCity: string;
+    arrivalCity: string;
+    moreInfo: string;
+    price: number;
+    boardingStopIndex: number;
+    alightingStopIndex: number;
+    departureDateTime?: string | null;
+    legFares?: TripLegFarePayload[];
+    originDestinationPrice?: number | null;
+  }): Observable<TripPricePreviewResponse> {
+    const payload: Record<string, unknown> = {
+      departureCity: body.departureCity,
+      arrivalCity: body.arrivalCity,
+      moreInfo: body.moreInfo ?? '',
+      price: body.price,
+      boardingStopIndex: body.boardingStopIndex,
+      alightingStopIndex: body.alightingStopIndex,
+    };
+    if (body.departureDateTime != null && String(body.departureDateTime).trim() !== '') {
+      payload['departureDateTime'] = body.departureDateTime;
+    }
+    if (body.legFares != null && body.legFares.length > 0) {
+      payload['legFares'] = body.legFares;
+    }
+    if (body.originDestinationPrice != null && !Number.isNaN(Number(body.originDestinationPrice))) {
+      payload['originDestinationPrice'] = Number(body.originDestinationPrice);
+    }
+    return this.http.post<TripPricePreviewResponse>('/trips/price-preview', payload);
   }
 }

@@ -1,68 +1,114 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router, RouterLink } from '@angular/router'; // 👈 Import de Router et RouterModule
-import { debounceTime } from 'rxjs/operators';
+import { RouterModule, Router } from '@angular/router';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-// Services
 import { TripService, Trip } from '../../../core/services/trip/trip.service';
+import { getTripPublicListPrice } from '../../../core/utils/trip-public-list-price.util';
 import { AuthService } from '../../../core/services/auth/auth.service';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  // ✅ Ajout de RouterModule ici pour que [routerLink] fonctionne dans le HTML
-  imports: [ReactiveFormsModule, CommonModule, FormsModule, RouterModule,RouterLink],
+  imports: [ReactiveFormsModule, CommonModule, FormsModule, RouterModule],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
-  // Injections
   private fb = inject(FormBuilder);
   private cdr = inject(ChangeDetectorRef);
   private tripService = inject(TripService);
   private authService = inject(AuthService);
-  private router = inject(Router); // 👈 Injecter le Router pour la navigation programmée
+  private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
 
-  // Data
-  allTrips: Trip[] = [];
   filteredTrips: Trip[] = [];
+  loadingTrips = false;
 
-  // Configuration
   readonly IMAGE_BASE_URL = 'http://localhost:8080/uploads/';
 
-  // Formulaire de recherche
+  /** Prix catalogue départ → arrivée (saisi à la création, pas somme des tronçons). */
+  listPrice = getTripPublicListPrice;
+
   searchForm = this.fb.group({
     departure: [''],
     arrival: [''],
     date: [''],
   });
 
-  ngOnInit() {
-    this.searchForm.valueChanges.pipe(debounceTime(200)).subscribe(() => {
-      this.applyFilter();
-    });
+  constructor() {
+    this.searchForm.valueChanges
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(
+          (a, b) =>
+            a.departure === b.departure && a.arrival === b.arrival && a.date === b.date,
+        ),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => this.refreshTripsFromForm());
+  }
 
+  ngOnInit(): void {
+    this.loadAllTrips();
+  }
+
+  private loadAllTrips(): void {
+    this.loadingTrips = true;
     this.tripService.getAllTrips().subscribe({
       next: (data) => {
-        this.allTrips = data;
-        this.applyFilter();
+        this.filteredTrips = data;
+        this.loadingTrips = false;
+        this.cdr.markForCheck();
       },
-      error: (err) => console.error('Erreur API:', err),
+      error: (err) => {
+        console.error('[home] Chargement des voyages (GET /trips) :', err);
+        this.loadingTrips = false;
+        this.filteredTrips = [];
+        this.cdr.markForCheck();
+      },
     });
   }
 
   /**
-   * Redirection vers la page de réservation avec plan de bus
+   * Source de vérité : API `/trips/search` dès qu’au moins départ ou arrivée est saisi.
+   * Catalogue complet via `GET /trips` si les deux champs ville sont vides.
    */
-  openBooking(trip: Trip) {
-    // Vérifier si l'utilisateur est connecté avant de naviguer (Optionnel car gardé par AuthGuard)
+  private refreshTripsFromForm(): void {
+    const { departure, arrival, date } = this.searchForm.getRawValue();
+    const d = departure?.trim() ?? '';
+    const a = arrival?.trim() ?? '';
+    const dt = date ?? '';
+
+    if (!d && !a) {
+      this.loadAllTrips();
+      return;
+    }
+
+    this.loadingTrips = true;
+    this.tripService.searchTrips(d, a, dt).subscribe({
+      next: (data) => {
+        this.filteredTrips = data;
+        this.loadingTrips = false;
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.error('[home] Recherche voyages (GET /trips/search) :', err);
+        this.filteredTrips = [];
+        this.loadingTrips = false;
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  openBooking(trip: Trip): void {
     if (!this.authService.currentUser()) {
-      // On peut rediriger vers le login ou laisser le AuthGuard faire son travail
       this.router.navigate(['/auth/login']);
       return;
     }
-    // Navigation vers la nouvelle feature booking
     this.router.navigate(['/booking/trip', trip.id]);
   }
 
@@ -76,29 +122,8 @@ export class HomeComponent implements OnInit {
       .join(' ');
   }
 
-  applyFilter() {
-    const formValue = this.searchForm.getRawValue();
-    const searchDep = formValue.departure?.trim().toLowerCase() || '';
-    const searchArr = formValue.arrival?.trim().toLowerCase() || '';
-    const searchDate = formValue.date || '';
-
-    this.filteredTrips = this.allTrips.filter((trip) => {
-      const tripDep = trip.departureCity?.toLowerCase() || '';
-      const tripArr = trip.arrivalCity?.toLowerCase() || '';
-      const tripDate = String(trip.departureDateTime || '');
-
-      const matchDep = !searchDep || tripDep.startsWith(searchDep);
-      const matchArr = !searchArr || tripArr.startsWith(searchArr);
-      const matchDate = !searchDate || tripDate.startsWith(searchDate);
-
-      return matchDep && matchArr && matchDate;
-    });
-
-    this.cdr.detectChanges();
-  }
-
-  resetFilter() {
-    this.searchForm.reset();
-    this.applyFilter();
+  resetFilter(): void {
+    this.searchForm.reset({ departure: '', arrival: '', date: '' });
+    this.loadAllTrips();
   }
 }

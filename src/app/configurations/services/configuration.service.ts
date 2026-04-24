@@ -13,11 +13,12 @@ export class ConfigurationService {
             e.domain.some(d => host.includes(d))
         );
         const envName = (envMatch ? envMatch.env : 'local') as keyof typeof CONFIGURATION_DATA.variables;
-        this.currentConfig = CONFIGURATION_DATA.variables[envName];
+        this.currentConfig = CONFIGURATION_DATA.variables[envName] ?? CONFIGURATION_DATA.variables.local;
         console.log(`[Mobili Config] Mode détecté : ${envName}`);
     }
 
    getEnvironmentVariable(key: string): string | null {
-    return this.currentConfig ? this.currentConfig[key] : null;
-}
+    const value = this.currentConfig ? this.currentConfig[key] : null;
+    return typeof value === 'string' && value.trim().length > 0 ? value : null;
+  }
 }

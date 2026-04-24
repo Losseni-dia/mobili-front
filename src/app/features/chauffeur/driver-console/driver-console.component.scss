@@ -1,0 +1,495 @@
+@use "sass:color";
+@import '../../../styles/variables';
+@import '../../../styles/mixins';
+
+.driver-page {
+  min-height: 100vh;
+  background: #f5f6fa;
+  padding-bottom: 60px;
+}
+
+// ======================================================================
+//  TOPBAR
+// ======================================================================
+.driver-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 26px;
+  background: #0b1533;
+  color: $white;
+  border-bottom: 4px solid $mobili-yellow;
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .brand-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: $mobili-yellow;
+      box-shadow: 0 0 0 5px rgba($mobili-yellow, 0.18);
+    }
+
+    .brand-name {
+      display: block;
+      font-weight: 900;
+      font-size: 1rem;
+      letter-spacing: 1.4px;
+    }
+
+    small {
+      display: block;
+      color: rgba($white, 0.6);
+      font-size: 0.72rem;
+      letter-spacing: 0.4px;
+      margin-top: 2px;
+    }
+  }
+
+  .driver-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .trip-pill {
+    padding: 7px 14px;
+    border-radius: $radius-pill;
+    background: rgba($mobili-yellow, 0.15);
+    color: $mobili-yellow;
+    font-weight: 800;
+    font-size: 0.78rem;
+    letter-spacing: 0.6px;
+  }
+
+  .ghost-btn {
+    padding: 7px 14px;
+    border-radius: $radius-pill;
+    background: rgba($white, 0.06);
+    color: rgba($white, 0.8);
+    border: 1px solid rgba($white, 0.1);
+    font-weight: 700;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all $t-base;
+
+    &:hover { background: rgba($white, 0.14); color: $white; }
+  }
+
+  .user-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 14px 4px 4px;
+    background: rgba($white, 0.08);
+    border: 1px solid rgba($white, 0.1);
+    border-radius: $radius-pill;
+    color: $white;
+    font-weight: 700;
+    font-size: 0.85rem;
+
+    .avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: $gradient-gold;
+      color: $mobili-blue-deep;
+      font-weight: 900;
+      font-size: 0.78rem;
+    }
+  }
+}
+
+// ======================================================================
+//  PICKER (avant chargement d'un voyage)
+// ======================================================================
+.picker {
+  max-width: 540px;
+  margin: 60px auto;
+  padding: 36px;
+  background: $white;
+  border: 1px solid $gray-200;
+  border-radius: $radius-md;
+  text-align: center;
+  animation: cardIn 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+
+  h2 {
+    font-family: $font-display;
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: $mobili-blue-deep;
+    letter-spacing: -0.3px;
+    margin-bottom: 8px;
+  }
+
+  > p {
+    color: $gray-500;
+    font-size: 0.92rem;
+    margin-bottom: 22px;
+  }
+
+  .picker-form {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+
+    input { @include input; padding: 12px 14px; font-size: 1rem; }
+
+    .primary-btn { padding: 12px 22px; }
+  }
+}
+
+// ======================================================================
+//  BANNERS
+// ======================================================================
+.banner {
+  margin: 16px 26px 0;
+  padding: 12px 16px;
+  border-radius: $radius-sm;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border-left: 4px solid currentColor;
+
+  &.danger { background: $danger-soft; color: $danger; }
+  &.success { background: rgba($success, 0.12); color: $success; }
+}
+
+// ======================================================================
+//  CARDS génériques
+// ======================================================================
+.card {
+  margin: 18px 26px 0;
+  background: $white;
+  border: 1px solid $gray-200;
+  border-radius: $radius-md;
+  padding: 22px 24px;
+  animation: cardIn 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+
+  .card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 18px;
+
+    h2 {
+      margin: 0 0 3px;
+      font-size: 1rem;
+      font-weight: 900;
+      color: $mobili-blue-deep;
+      letter-spacing: -0.2px;
+    }
+
+    p {
+      margin: 0;
+      color: $gray-500;
+      font-size: 0.86rem;
+
+      strong { color: $mobili-blue; font-weight: 800; }
+    }
+  }
+}
+
+// ======================================================================
+//  ITINÉRAIRE — timeline horizontale
+// ======================================================================
+.timeline {
+  list-style: none;
+  display: flex;
+  gap: 0;
+  padding: 0;
+  margin: 0;
+  overflow-x: auto;
+  padding-bottom: 6px;
+
+  .stop {
+    flex: 1 0 200px;
+    padding: 14px 14px 12px;
+    cursor: pointer;
+    border-radius: $radius-sm;
+    transition: background $t-base;
+
+    &:hover { background: $gray-50; }
+
+    &.active {
+      background: rgba($mobili-yellow, 0.14);
+
+      .stop-marker .dot {
+        background: $mobili-yellow;
+        box-shadow: 0 0 0 5px rgba($mobili-yellow, 0.3);
+      }
+      .stop-name { color: $mobili-blue-deep; }
+    }
+
+    &.passed .stop-marker .dot {
+      background: $success;
+      box-shadow: 0 0 0 4px rgba($success, 0.2);
+    }
+  }
+
+  .stop-marker {
+    position: relative;
+    height: 14px;
+    margin-bottom: 12px;
+
+    .dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: $gray-300;
+      display: block;
+      position: relative;
+      z-index: 2;
+      transition: background $t-base, box-shadow $t-base;
+    }
+
+    .line {
+      position: absolute;
+      top: 6px;
+      left: 14px;
+      right: -14px;
+      height: 2px;
+      background: $gray-200;
+    }
+  }
+
+  .stop:last-child .stop-marker .line { display: none; }
+
+  .stop-head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+
+    .stop-index {
+      color: $gray-400;
+      font-weight: 800;
+      font-size: 0.74rem;
+      letter-spacing: 1px;
+    }
+
+    .stop-name {
+      color: $mobili-blue;
+      font-weight: 800;
+      font-size: 0.95rem;
+      text-transform: capitalize;
+    }
+  }
+
+  .stop-time {
+    display: block;
+    margin-top: 4px;
+    color: $gray-500;
+    font-size: 0.78rem;
+    text-transform: capitalize;
+  }
+}
+
+// ======================================================================
+//  Action grid (départ + manual)
+// ======================================================================
+.action-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin: 0 26px;
+  padding-top: 18px;
+
+  > .card { margin: 0; }
+
+  @media (max-width: 880px) { grid-template-columns: 1fr; }
+}
+
+.action-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.callout {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: $mobili-blue-fog;
+  border: 1px solid rgba($mobili-blue, 0.12);
+  border-radius: $radius-sm;
+
+  .big-icon { font-size: 1.6rem; filter: drop-shadow(0 4px 10px rgba($mobili-blue, 0.25)); }
+
+  > div { display: flex; flex-direction: column; }
+
+  strong {
+    color: $mobili-blue-deep;
+    font-weight: 900;
+    font-size: 1.05rem;
+    text-transform: capitalize;
+  }
+
+  span {
+    color: $gray-500;
+    font-size: 0.78rem;
+    margin-top: 2px;
+  }
+}
+
+.manual-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+
+  input { @include input; padding: 12px 14px; }
+}
+
+// ======================================================================
+//  PASSAGERS
+// ======================================================================
+.passengers .card-head .ghost-btn {
+  padding: 8px 14px;
+  border-radius: $radius-sm;
+  background: $gray-100;
+  border: 1px solid $gray-200;
+  color: $gray-600;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all $t-base;
+
+  &:hover { background: $mobili-blue-fog; color: $mobili-blue; }
+}
+
+.passenger-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pax {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: $white;
+  border: 1px solid $gray-200;
+  border-radius: $radius-md;
+  transition: all $t-base;
+
+  &:hover { border-color: rgba($mobili-blue, 0.25); }
+
+  &.done {
+    background: rgba($success, 0.04);
+    border-color: rgba($success, 0.25);
+
+    .pax-info strong { color: $gray-500; text-decoration: line-through; }
+    .pax-seat { background: rgba($success, 0.12); color: $success; }
+  }
+
+  .pax-seat {
+    width: 64px;
+    padding: 10px 6px;
+    background: $mobili-yellow;
+    color: $mobili-blue-deep;
+    border-radius: $radius-sm;
+    text-align: center;
+
+    .seat-label {
+      display: block;
+      font-size: 0.6rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      opacity: 0.7;
+    }
+
+    .seat-num {
+      display: block;
+      font-size: 1.3rem;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .pax-info {
+    min-width: 0;
+
+    strong {
+      display: block;
+      color: $mobili-blue-deep;
+      font-weight: 800;
+      font-size: 1rem;
+    }
+
+    .pax-meta {
+      color: $gray-500;
+      font-size: 0.82rem;
+
+      .mono {
+        font-family: 'Fira Code', 'Consolas', monospace;
+        color: $mobili-blue;
+      }
+    }
+  }
+
+  .pax-action {
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: $radius-pill;
+  font-weight: 800;
+  font-size: 0.78rem;
+
+  &.done {
+    background: rgba($success, 0.14);
+    color: $success;
+  }
+}
+
+// ======================================================================
+//  Empty state
+// ======================================================================
+.empty {
+  text-align: center;
+  padding: 30px 20px;
+  color: $gray-500;
+  font-size: 0.92rem;
+
+  .empty-icon { font-size: 2rem; margin-bottom: 8px; }
+  strong { display: block; color: $mobili-blue-deep; font-size: 1rem; margin-bottom: 4px; }
+  p { margin: 0; font-size: 0.86rem; }
+}
+
+// ======================================================================
+//  BOUTONS
+// ======================================================================
+.primary-btn {
+  @include btn-primary;
+  padding: 12px 20px;
+  font-size: 0.86rem;
+  letter-spacing: 0.4px;
+
+  &.block { width: 100%; }
+  &.small { padding: 8px 14px; font-size: 0.78rem; }
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}

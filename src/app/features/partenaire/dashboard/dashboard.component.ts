@@ -1,44 +1,65 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import {
+  PartenaireService,
+  PartnerDashboard,
+  Station,
+} from '../../../core/services/partners/partenaire.service';
 import { AuthService } from '../../../core/services/auth/auth.service';
-import { PartenaireService, Partner } from '../../../core/services/partners/partenaire.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit {
-  public authService = inject(AuthService);
   private partenaireService = inject(PartenaireService);
+  private auth = inject(AuthService);
 
-  // Signal pour stocker les infos de YALLA TRANSPORT
-  companyInfo = signal<Partner | null>(null);
+  recentBookings = signal<any[]>([]);
+  stations = signal<Station[]>([]);
+  /** Dirigeant : filtre des KPI (backend `stationId` optionnel) */
+  stationFilter: 'all' | number = 'all';
 
   stats = [
-    { label: 'Voyages actifs', value: 12, color: '#092990' },
-    { label: 'Réservations', value: 48, color: '#27ae60' },
-    { label: 'Revenus (CFA)', value: '450.000', color: '#f39c12' },
-    { label: 'Avis Clients', value: '4.8/5', color: '#e74c3c' },
+    { label: 'Voyages actifs', value: '0', color: '#092990' },
+    { label: 'Réservations', value: '0', color: '#27ae60' },
+    { label: 'Revenus (CFA)', value: '0', color: '#f39c12' },
   ];
 
+  isGareOnly = () => this.auth.hasRole('GARE');
+
   ngOnInit() {
-    this.partenaireService.getMyPartnerInfo().subscribe({
-      next: (data) => {
-        console.log('Données reçues du serveur :', data); // 👈 Ajoute ce log pour voir ce qui arrive
-        this.companyInfo.set(data);
+    this.partenaireService.listStations().subscribe({
+      next: (list) => {
+        this.stations.set(list);
+        this.loadStats();
       },
-      error: (err) => {
-        console.error('Erreur de récupération :', err);
-      },
+      error: () => this.loadStats(),
     });
   }
 
-  getLogoUrl(path: string | undefined): string | null {
-    // On ne rajoute pas "partners/" ici non plus
-    return `${this.authService.IMAGE_BASE_URL}${path}`;
+  onStationFilterChange() {
+    this.loadStats();
+  }
+
+  private loadStats() {
+    const sid: number | undefined =
+      this.isGareOnly() || this.stationFilter === 'all' ? undefined : this.stationFilter;
+    this.partenaireService.getDashboardStats(sid).subscribe({
+      next: (data: PartnerDashboard) => {
+        this.stats = [
+          { label: 'Voyages actifs', value: data.activeTripsCount.toString(), color: '#092990' },
+          { label: 'Réservations', value: data.totalBookingsCount.toString(), color: '#27ae60' },
+          { label: 'Revenus (CFA)', value: data.totalRevenue.toLocaleString(), color: '#f39c12' },
+        ];
+        this.recentBookings.set(data.recentBookings);
+      },
+      error: (err) => console.error('Erreur stats dashboard :', err),
+    });
   }
 }

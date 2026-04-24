@@ -1,6 +1,8 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { AuthService } from '../services/auth/auth.service';
+import { catchError, throwError } from 'rxjs';
 
 export interface AuthResponse {
   token: string;
@@ -15,6 +17,7 @@ export interface AuthResponse {
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
+  const router = inject(Router);
   const user = authService.currentUser();
 
   // On ne modifie la requête QUE si on a un token en mémoire
@@ -24,7 +27,15 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         Authorization: `Bearer ${user.token}`,
       },
     });
-    return next(authReq);
+    return next(authReq).pipe(
+      catchError((error) => {
+        if (user && (error.status === 401 || error.status === 403)) {
+          authService.logout();
+          router.navigate(['/auth/login']);
+        }
+        return throwError(() => error);
+      }),
+    );
   }
 
   // Si pas de token (ex: login, recherche publique), on laisse passer la requête telle quelle

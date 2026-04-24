@@ -1,7 +1,9 @@
-import { Component, OnInit, inject, signal, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Pour *ngIf et *ngFor
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'; // Pour routerLink
-import { BookingService } from '../../../core/services/booking/booking.service';
+import { BookingResponse, BookingService } from '../../../core/services/booking/booking.service';
+import { of, Subject, timer } from 'rxjs';
+import { catchError, switchMap, take, takeUntil } from 'rxjs/operators';
 
 
 @Component({
@@ -11,32 +13,87 @@ import { BookingService } from '../../../core/services/booking/booking.service';
   templateUrl: './payment-success.component.html',
   styleUrls: ['./payment-success.component.scss'],
 })
-export class PaymentSuccessComponent implements OnInit {
+export class PaymentSuccessComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private bookingService = inject(BookingService);
   private cdr = inject(ChangeDetectorRef);
+  private destroy$ = new Subject<void>();
 
   bookingId: number | null = null;
   loading = true;
-  bookingDetails: any = null;
+  bookingDetails: BookingResponse | null = null;
+  errorMessage: string | null = null;
+  private readonly maxAttempts = 12;
+  private attempts = 0;
 
   ngOnInit(): void {
-    // Récupération sécurisée des paramètres
-    this.route.queryParams.subscribe((params) => {
-      const idParam = params['id'];
-      const status = params['status'];
-
-      if (idParam && status === 'approved') {
-        // CORRECTION : Si FedaPay envoie deux IDs, on prend le premier (ton bookingId)
+    // FedaPay renvoie souvent seulement ?id=BOOKING_ID (sans status=approved).
+    // On tente d'abord une vérification serveur (API FedaPay + confirmation + billets),
+    // puis on interroge la réservation jusqu’à statut != PENDING.
+    this.route.queryParams
+      .pipe(take(1))
+      .subscribe((params) => {
+        const idParam = params['id'];
+        if (!idParam) {
+          this.router.navigate(['/']);
+          return;
+        }
         const id = Array.isArray(idParam) ? idParam[0] : idParam;
-        this.bookingId = parseInt(id, 10);
-        this.loadBookingDetails();
-      } else {
-        // Si pas de paiement approuvé, on redirige vers l'accueil
-        this.router.navigate(['/']);
-      }
-    });
+        const parsed = parseInt(String(id), 10);
+        if (Number.isNaN(parsed) || parsed < 1) {
+          this.router.navigate(['/']);
+          return;
+        }
+        this.bookingId = parsed;
+
+        this.bookingService
+          .verifyFedaPayPayment(this.bookingId)
+          .pipe(catchError(() => of(null)))
+          .subscribe(() => this.startPollingBookingDetails());
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private startPollingBookingDetails() {
+    this.attempts = 0;
+    timer(0, 2000)
+      .pipe(
+        takeUntil(this.destroy$),
+        switchMap(() => {
+          this.attempts += 1;
+          return this.bookingService.getBookingById(this.bookingId as number);
+        }),
+      )
+      .subscribe({
+        next: (data) => this.handleBookingState(data),
+        error: () => this.handlePollingError(),
+      });
+  }
+
+  private handleBookingState(data: BookingResponse) {
+    this.bookingDetails = data;
+    if (data.status === 'PENDING' && this.attempts < this.maxAttempts) {
+      return;
+    }
+
+    if (data.status === 'PENDING') {
+      this.errorMessage = 'La confirmation prend plus de temps que prévu. Vérifie tes billets dans quelques instants.';
+    }
+    this.loading = false;
+    this.destroy$.next();
+    this.cdr.detectChanges();
+  }
+
+  private handlePollingError() {
+    this.loading = false;
+    this.errorMessage = 'Impossible de récupérer la confirmation du paiement pour le moment.';
+    this.destroy$.next();
+    this.cdr.detectChanges();
   }
 
   loadBookingDetails() {
@@ -44,21 +101,9 @@ export class PaymentSuccessComponent implements OnInit {
 
     this.bookingService.getBookingById(this.bookingId).subscribe({
       next: (data) => {
-        this.bookingDetails = data;
-        console.log('Vérification status:', data.status);
-
-        if (data.status === 'PENDING') {
-          setTimeout(() => this.loadBookingDetails(), 2000);
-        } else {
-          this.loading = false;
-          this.cdr.detectChanges(); // <--- Force Angular à voir que loading est false
-          console.log('Loading est maintenant :', this.loading);
-        }
+        this.handleBookingState(data);
       },
-      error: (err) => {
-        this.loading = false;
-        this.cdr.detectChanges();
-      },
+      error: () => this.handlePollingError(),
     });
   }
 }

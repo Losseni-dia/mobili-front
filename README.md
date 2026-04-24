@@ -1,4 +1,17 @@
-# Frontend
+# Mobili — Frontend (Angular)
+
+SPA du projet **Mobili**. La vision produit, le backlog, le **suivi des fonctionnalités** et le [CHANGELOG daté](../CHANGELOG.md) sont dans le [**README à la racine**](../README.md) du dépôt — **à tenir à jour** avec chaque livraison.
+
+**Recherche trajets (étape 4)** : comportement API, paramètres `departure`/`arrival`, pages d’accueil et résultats, et liste des fichiers modifiés — voir [**docs/recherche-segments.md**](../docs/recherche-segments.md) à la racine du dépôt.
+
+### Points notables (état récent)
+
+- **Routing** : espaces **Voyageur**, **Partenaire** et **Admin** utilisent des *shells* (`user-shell`, `partner-shell`, `admin-shell`) — voir [`src/app/app.routes.ts`](src/app/app.routes.ts). La page **chauffeur** est à part : `/chauffeur` (`driver-console`).
+- **Styles** : design system en Sass — `src/app/styles/_variables.scss`, `_mixins.scss`, `_data-panel.scss` ; entrée globale `src/styles.scss`.
+- **Locale** : affichage **français** (`LOCALE_ID`, `registerLocaleData` dans `app.config.ts`).
+- **Navigation principale** : le header public pointe en **lien direct** vers les tableaux de bord (pas de sous-menus déroulants pour Admin / Partenaire / profil).
+
+---
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.4.
 

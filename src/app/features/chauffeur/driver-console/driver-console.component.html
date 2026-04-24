@@ -1,0 +1,209 @@
+<div class="driver-page">
+    <header class="driver-topbar">
+        <div class="brand">
+            <span class="brand-dot"></span>
+            <div>
+                <span class="brand-name">MOBILI · Chauffeur</span>
+                <small>Console embarquement & descente</small>
+            </div>
+        </div>
+
+        <div class="driver-meta">
+            @if (loadedTripId(); as id) {
+                <span class="trip-pill">Voyage #{{ id }}</span>
+                <button type="button" class="ghost-btn" (click)="resetTrip()" title="Charger un autre voyage">⤺ Changer</button>
+            }
+            <span class="user-chip">
+                <span class="avatar">{{ (authService.currentUser()?.firstname || 'C')[0] }}</span>
+                <span>{{ authService.currentUser()?.firstname || 'Chauffeur' }}</span>
+            </span>
+        </div>
+    </header>
+
+    @if (!loadedTripId()) {
+        <section class="picker">
+            <h2>Démarre ta journée</h2>
+            <p>Saisis l'identifiant du voyage que tu vas conduire pour charger ses arrêts et la liste des passagers.</p>
+
+            <div class="picker-form">
+                <input
+                    type="number"
+                    min="1"
+                    placeholder="ID voyage (ex : 12)"
+                    [ngModel]="tripIdInput()"
+                    (ngModelChange)="tripIdInput.set($event)"
+                    (keyup.enter)="loadTrip()"
+                />
+                <button type="button" class="primary-btn" (click)="loadTrip()" [disabled]="isLoadingStops()">
+                    @if (isLoadingStops()) { Chargement… } @else { Charger le voyage → }
+                </button>
+            </div>
+
+            @if (error()) {
+                <p class="banner danger">⚠ {{ error() }}</p>
+            }
+        </section>
+    } @else {
+        @if (successFlash()) {
+            <div class="banner success">✅ {{ successFlash() }}</div>
+        }
+        @if (error()) {
+            <div class="banner danger">⚠ {{ error() }}</div>
+        }
+
+        <section class="card itinerary">
+            <header class="card-head">
+                <div>
+                    <h2>Itinéraire</h2>
+                    <p>Sélectionne ton arrêt courant pour voir les passagers à descendre.</p>
+                </div>
+            </header>
+
+            <ol class="timeline">
+                @for (stop of stops(); track stop.stopIndex) {
+                    <li
+                        class="stop"
+                        [class.active]="stop.stopIndex === selectedStop()"
+                        [class.passed]="stop.stopIndex < selectedStop()"
+                        (click)="selectStop(stop.stopIndex)"
+                    >
+                        <div class="stop-marker">
+                            <span class="dot"></span>
+                            <span class="line"></span>
+                        </div>
+                        <div class="stop-body">
+                            <div class="stop-head">
+                                <span class="stop-index">#{{ stop.stopIndex + 1 }}</span>
+                                <span class="stop-name">{{ stop.cityLabel }}</span>
+                            </div>
+                            <span class="stop-time">{{ stop.plannedDepartureAt | date: 'EEE d MMM HH:mm' }}</span>
+                        </div>
+                    </li>
+                }
+            </ol>
+        </section>
+
+        <section class="action-grid">
+            <article class="card action-card departure">
+                <header class="card-head">
+                    <div>
+                        <h2>Marquer le départ</h2>
+                        <p>Enregistre l'heure de départ depuis <strong>{{ selectedStopLabel() }}</strong>.</p>
+                    </div>
+                </header>
+
+                <div class="action-body">
+                    <div class="callout">
+                        <span class="big-icon">🚌</span>
+                        <div>
+                            <strong>{{ selectedStopLabel() }}</strong>
+                            <span>Arrêt sélectionné · index {{ selectedStop() }}</span>
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="primary-btn block"
+                        [disabled]="isBusy('departure-' + selectedStop())"
+                        (click)="recordDeparture()"
+                    >
+                        @if (isBusy('departure-' + selectedStop())) {
+                            Envoi en cours…
+                        } @else {
+                            ▷ Enregistrer le départ
+                        }
+                    </button>
+                </div>
+            </article>
+
+            <article class="card action-card manual">
+                <header class="card-head">
+                    <div>
+                        <h2>Marquer un passager descendu</h2>
+                        <p>Saisis le numéro de ticket si le client n'apparaît pas dans la liste.</p>
+                    </div>
+                </header>
+
+                <div class="action-body">
+                    <div class="manual-row">
+                        <input
+                            type="text"
+                            placeholder="Numéro de ticket"
+                            [ngModel]="ticketInput()"
+                            (ngModelChange)="ticketInput.set($event)"
+                            (keyup.enter)="markManualTicket()"
+                        />
+                        <button
+                            type="button"
+                            class="primary-btn"
+                            (click)="markManualTicket()"
+                            [disabled]="!ticketInput().trim()"
+                        >
+                            ✓ Confirmer
+                        </button>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <section class="card passengers">
+            <header class="card-head">
+                <div>
+                    <h2>Passagers à descendre · {{ selectedStopLabel() }}</h2>
+                    <p>
+                        Reste : <strong>{{ alightedRemaining() }}</strong> · Faits :
+                        <strong>{{ alightedDone() }}</strong> / {{ totalAlightings() }}
+                    </p>
+                </div>
+                <button type="button" class="ghost-btn" (click)="refreshAlightings()" title="Rafraîchir">↻</button>
+            </header>
+
+            @if (isLoadingAlightings()) {
+                <div class="empty">Chargement de la liste…</div>
+            } @else if (alightings().length === 0) {
+                <div class="empty">
+                    <div class="empty-icon">🎉</div>
+                    <strong>Personne ne descend ici.</strong>
+                    <p>Aucun passager n'a réservé pour cet arrêt.</p>
+                </div>
+            } @else {
+                <ul class="passenger-list">
+                    @for (p of alightings(); track p.ticketNumber) {
+                        <li class="pax" [class.done]="p.ticketStatus === 'USED'">
+                            <div class="pax-seat">
+                                <span class="seat-label">Siège</span>
+                                <span class="seat-num">{{ p.seatNumber }}</span>
+                            </div>
+                            <div class="pax-info">
+                                <strong>{{ p.passengerName }}</strong>
+                                <span class="pax-meta">
+                                    Ticket
+                                    <span class="mono">#{{ p.ticketNumber }}</span>
+                                    · embarqué arrêt {{ p.boardingStopIndex + 1 }}
+                                </span>
+                            </div>
+                            <div class="pax-action">
+                                @if (p.ticketStatus === 'UTILISÉ') {
+                                    <span class="status-pill done">✓ Descendu</span>
+                                } @else {
+                                    <button
+                                        type="button"
+                                        class="primary-btn small"
+                                        [disabled]="isBusy('ticket-' + p.ticketNumber)"
+                                        (click)="markAlighted(p.ticketNumber)"
+                                    >
+                                        @if (isBusy('ticket-' + p.ticketNumber)) {
+                                            …
+                                        } @else {
+                                            Marquer descendu
+                                        }
+                                    </button>
+                                }
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
+    }
+</div>

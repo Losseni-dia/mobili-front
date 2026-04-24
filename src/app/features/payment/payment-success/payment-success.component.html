@@ -7,6 +7,7 @@
 
         <h1 class="display-4-mobili">Paiement Réussi !</h1>
         <p class="text-muted">Votre voyage <strong>Mobili</strong> est maintenant confirmé.</p>
+        <p class="text-muted" *ngIf="errorMessage">{{ errorMessage }}</p>
 
         <div class="recap-ticket" *ngIf="bookingDetails">
             <h5>DÉTAILS DE LA RÉSERVATION</h5>
@@ -26,7 +27,7 @@
                 <span class="value">{{bookingDetails.departureDateTime | date:'dd MMM yyyy à HH:mm'}}</span>
             </div>
 
-            <div class="info-line" *ngIf="bookingDetails.seatNumbers?.length">
+            <div class="info-line" *ngIf="bookingDetails.seatNumbers.length">
                 <span class="label">Vos places</span>
                 <span class="badge-seat">
                     Siège {{bookingDetails.seatNumbers.join(', ')}}

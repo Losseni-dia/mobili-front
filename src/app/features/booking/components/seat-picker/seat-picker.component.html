@@ -1,11 +1,17 @@
-<div class="bus-container">
-    <div class="grid-bus">
-        @for (seat of seatListSignal(); track seat) {
-        <div class="seat" [class.selected]="selectedSeats().includes(seat)"
-            [class.occupied]="occupiedSeats.includes(seat)" (click)="onSeatClick(seat)">
-            {{ seat }}
+<div class="bus-wrapper">
+    <div class="bus-container">
+        <div class="bus-front">
+            <span class="steering-wheel">⭕</span>
         </div>
-        }
+
+        <div class="grid-bus">
+            @for (seat of seatListSignal(); track seat) {
+            <div class="seat" [class.selected]="selectedSeats().includes(seat)"
+                [class.occupied]="occupiedSeats.includes(seat)" (click)="onSeatClick(seat)">
+                {{ seat }}
+            </div>
+            }
+        </div>
     </div>
 </div>
 

@@ -4,86 +4,102 @@
     <nav class="nav-container">
         @if (authService.isLoggedIn()) {
 
-        @if (authService.hasRole('ADMIN') || authService.hasRole('PARTNER') || authService.hasRole('CHAUFFEUR')) {
-        <a routerLink="/gare" routerLinkActive="active" class="nav-item station">
-            🚉 Gare
-        </a>
-        }
-
-        @if (authService.hasRole('ADMIN')) {
-        <div class="dropdown-group">
-            <button class="dropdown-trigger admin-btn">
-                🛠️ Admin <span class="arrow">▾</span>
-            </button>
-            <div class="dropdown-menu">
-                <a routerLink="/admin/dashboard" class="dropdown-link">Tableau de bord</a>
-                <div class="dropdown-divider"></div>
-                <a routerLink="/admin/users" class="dropdown-link">Gérer Utilisateurs</a>
-                <a routerLink="/admin/partners" class="dropdown-link">Gérer Partenaires</a>
-            </div>
-        </div>
-        }
-
-        <div class="dropdown-group">
-            @if (authService.currentUser()?.partnerId || authService.hasRole('PARTNER') ||
-            authService.hasRole('CHAUFFEUR')) {
-            <button class="dropdown-trigger company">
-                Partenaire <span class="arrow">▾</span>
-            </button>
-            <div class="dropdown-menu">
-                <a routerLink="/partenaire/dashboard" class="dropdown-link">Tableau de bord</a>
-                <div class="dropdown-divider"></div>
-                <a routerLink="/partenaire/trips" class="dropdown-link">Mes Voyages</a>
-                @if (authService.hasRole('PARTNER') || authService.hasRole('ADMIN')) {
-                <a routerLink="/partenaire/add-trip" class="dropdown-link">Publier un trajet</a>
-                }
-            </div>
-            } @else {
-            <a routerLink="/partenaire/register" class="nav-item register-partner">
-                Devenir Partenaire
-            </a>
+            @if (authService.hasRole('ADMIN') || authService.hasRole('PARTNER') || authService.hasRole('CHAUFFEUR') || authService.hasRole('GARE')) {
+                <a
+                    routerLink="/gare"
+                    routerLinkActive="active"
+                    [routerLinkActiveOptions]="{ exact: false }"
+                    class="nav-item station"
+                    title="Espace gare / scanner"
+                >
+                    🚉 Gare
+                </a>
             }
-        </div>
+
+            @if (authService.hasRole('ADMIN') || authService.hasRole('CHAUFFEUR')) {
+                <a routerLink="/chauffeur" routerLinkActive="active" class="nav-item driver">
+                    🚐 Chauffeur
+                </a>
+            }
+
+            @if (authService.hasRole('ADMIN')) {
+                <a routerLink="/admin/dashboard" routerLinkActive="active" class="nav-item admin-link">
+                    🛠️ Admin
+                </a>
+            }
+
+            @if (showPartenaireEspaceLink()) {
+                <a
+                    routerLink="/partenaire/dashboard"
+                    routerLinkActive="active"
+                    [routerLinkActiveOptions]="{ exact: false }"
+                    class="nav-item partner-link"
+                    title="Espace compagnie : voyages, réservations"
+                >
+                    🏢 Partenaire
+                </a>
+            }
+
+            @if (showDevenirPartenaireCta()) {
+                <a routerLink="/partenaire/register" class="nav-item register-partner">
+                    Devenir Partenaire
+                </a>
+            }
+
         }
     </nav>
 
     <div class="actions">
         @if (authService.isLoggedIn()) {
-        <div class="user-profile-nav">
-            <span class="user-welcome">Salut, <strong>{{ authService.currentUser()?.firstname }}</strong></span>
+            <a
+                class="header-bell"
+                [routerLink]="notificationsPath()"
+                title="Notifications"
+                [attr.aria-label]="'Ouvrir les notifications'">
+                <span class="bell-ico" aria-hidden="true">🔔</span>
+                @if (mobiliInbox.hasUnread()) {
+                    <span class="bell-badge" aria-hidden="true">{{ mobiliInbox.unreadCount() > 9 ? '9+' : mobiliInbox.unreadCount() }}</span>
+                }
+            </a>
 
-            <div class="dropdown-group">
-                <div class="avatar-wrapper dropdown-trigger-avatar">
-                    @let avatar = getAvatarUrl(authService.currentUser()?.avatarUrl);
-                    @if (avatar) {
+            <a routerLink="/my-account/profile" routerLinkActive="active" class="avatar-link" title="Mon espace voyageur">
+                @let avatar = getAvatarUrl(authService.currentUser()?.avatarUrl);
+                @if (avatar) {
                     <img [src]="avatar" alt="Profil" draggable="false">
-                    } @else {
-                    <div class="header-initials">
+                } @else {
+                    <span class="header-initials">
                         {{ getInitials(authService.currentUser()?.firstname, authService.currentUser()?.lastname) }}
-                    </div>
-                    }
-                </div>
+                    </span>
+                }
+            </a>
 
-                <div class="dropdown-menu right">
-                    <div class="dropdown-header">
-                        <strong>{{ authService.currentUser()?.firstname }} {{ authService.currentUser()?.lastname
-                            }}</strong>
-                        <span>{{ authService.currentUser()?.email }}</span>
-                    </div>
-                    <div class="dropdown-divider"></div>
-                    <a routerLink="/my-account/profile" class="dropdown-link">👤 Mon Profil</a>
-                    <a routerLink="/my-account/my-tickets" class="dropdown-link">🎫 Mes Billets</a>
-                    <a routerLink="/my-account/settings" class="dropdown-link">⚙️ Paramètres</a>
-                    <div class="dropdown-divider"></div>
-                    <button (click)="logout()" class="dropdown-link logout">
-                        Déconnexion
-                    </button>
-                </div>
-            </div>
-        </div>
+            <button
+                type="button"
+                (click)="logout()"
+                class="btn-logout"
+                title="Se déconnecter"
+                aria-label="Se déconnecter"
+            >
+                <svg
+                    class="btn-logout__ico"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                >
+                    <path
+                        d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+                </svg>
+                <!--<span class="btn-logout__text">Déconnexion</span>-->
+            </button>
         } @else {
-        <a routerLink="/auth/login" class="link-auth">Connexion</a>
-        <button class="btn-register" routerLink="/auth/register">S'inscrire</button>
+            <a routerLink="/auth/login" class="link-auth">Connexion</a>
+            <button class="btn-register" routerLink="/auth/inscription">S'inscrire</button>
         }
     </div>
 </header>

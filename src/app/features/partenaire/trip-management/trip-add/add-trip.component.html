@@ -1,79 +1,215 @@
-<div class="add-container">
-    <div class="form-card">
-        <div class="form-header">
-            <button routerLink="/partenaire/trips" class="btn-back">←</button>
-            <h2>Publier un trajet complet</h2>
+<div class="add-page">
+  <div class="add-trip-card">
+    <header class="add-trip-header">
+      <div class="add-trip-header__row">
+        <a routerLink="/partenaire/trips" class="add-trip-back" aria-label="Retour aux trajets"
+          >←</a
+        >
+        <div class="add-trip-header__text">
+          <p class="add-trip-eyebrow">Trajets</p>
+          <h1 class="add-trip-title">Publier un trajet</h1>
         </div>
+      </div>
+    </header>
 
-        <form [formGroup]="tripForm" (ngSubmit)="onSubmit()">
-            <div class="form-grid">
-                <div class="field">
-                    <label>Ville de départ</label>
-                    <input type="text" formControlName="departureCity" placeholder="Ex: Dakar">
-                </div>
-                <div class="field">
-                    <label>Ville d'arrivée</label>
-                    <input type="text" formControlName="arrivalCity" placeholder="Ex: Touba">
-                </div>
+    <form [formGroup]="tripForm" (ngSubmit)="onSubmit()" class="add-trip-form" novalidate>
+      <section class="form-section" aria-label="Gare et itinéraire">
+        <h2 class="form-section__title">Gare & parcours</h2>
+        @if (showStationPicker() && operationalStations().length > 0) {
+          <div class="field field--full gare-pick">
+            <label for="stationId">Gare (statistiques & périmètre)</label>
+            <select id="stationId" formControlName="stationId">
+              <option [ngValue]="null">Toute la compagnie</option>
+              @for (g of operationalStations(); track g.id) {
+                <option [ngValue]="g.id">{{ g.city }} — {{ g.name }}</option>
+              }
+            </select>
+          </div>
+        } @else if (showStationPicker() && stations().length > 0) {
+          <p class="gare-pick-warn" role="status">
+            Aucune gare approuvée. Validez d’abord une gare dans
+            <strong>Partenaire → Gares</strong>.
+          </p>
+        }
 
-                <div class="field full-width">
-                    <label>Villes étapes (villes traversées)</label>
-                    <input type="text" formControlName="stops" placeholder="Ex: Thiès, Khombole, Bambey...">
-                </div>
+        <div class="form-grid">
+          <div class="field">
+            <label for="dep">Ville de départ</label>
+            <input id="dep" type="text" formControlName="departureCity" placeholder="Ex. Dakar" />
+          </div>
+          <div class="field">
+            <label for="arr">Ville d’arrivée</label>
+            <input id="arr" type="text" formControlName="arrivalCity" placeholder="Ex. Touba" />
+          </div>
+          <div class="field field--full">
+            <label for="stops">Villes traversées</label>
+            <input
+              id="stops"
+              type="text"
+              formControlName="stops"
+              placeholder="Ex. Thiès, Diourbel, Khombole"
+            />
+            <span class="field-hint">Laissez vide si trajet direct.</span>
+          </div>
+        </div>
+      </section>
 
-                <div class="field">
-                    <label>Lieu précis d'embarquement</label>
-                    <input type="text" formControlName="boardingPoint"
-                        placeholder="Ex: Garage Pompier, Place de l'Indépendance">
-                </div>
+      <section class="form-section" aria-label="Véhicule et horaire">
+        <h2 class="form-section__title">Véhicule & horaire</h2>
+        <div class="form-grid">
+          <div class="field">
+            <label for="vt">Type de véhicule</label>
+            <select id="vt" formControlName="vehicleType">
+              <option value="Car 70 places">Car (70 places)</option>
+              <option value="Bus Climatisé">Bus Climatisé (50 places)</option>
+              <option value="Bus Classique">Bus Classique (50 places)</option>
+              <option value="Minibus">Minibus (24 places)</option>
+              <option value="Massa normal">Massa normal (18 places)</option>
+              <option value="Massa 6 roues">Massa 6 roues (22 places)</option>
+              <option value="Van">Van (8 places)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="seats">Places</label>
+            <input id="seats" type="number" formControlName="availableSeats" min="1" />
+            <span class="field-hint">Ajusté selon le type de véhicule.</span>
+          </div>
+          <div class="field field--full field--date">
+            <label for="dt">Date et heure de départ</label>
+            <input id="dt" type="datetime-local" formControlName="departureDateTime" />
+          </div>
+        </div>
+      </section>
 
-                <div class="field">
-                    <label>Numéro de plaque</label>
-                    <input type="text" formControlName="vehiculePlateNumber" placeholder="Ex: DK-1234-A">
-                    <small *ngIf="tripForm.get('vehiculePlateNumber')?.invalid && tripForm.get('vehiculePlateNumber')?.touched"
-                        style="color: red;">
-                        La plaque d'immatriculation est obligatoire.
-                    </small>
-                </div>
-
-                <div class="field">
-                    <label>Date et Heure de départ</label>
-                    <input type="datetime-local" formControlName="departureDateTime">
-                </div>
-
-                <div class="field">
-                    <label>Type de véhicule</label>
-                <select formControlName="vehicleType">
-                    <option value="Bus Climatisé">Bus Climatisé</option>
-                    <option value="Bus Classique">Bus Classique</option>
-                    <option value="Car Climatisé">Car Climatisé</option>
-                    <option value="Car Classique">Car Classique</option>
-                    <option value="Minibus">Minibus</option>
-                    <option value="Van">Van</option>
-                </select>
-                </div>
-
-
-                <div class="field">
-                    <label>Photo du véhicule</label>
-                    <input type="file" (change)="onFileSelected($event)" accept="image/*" class="file-input">
-                </div>
-
-                <div class="field">
-                    <label>Prix du billet (FCFA)</label>
-                    <input type="number" formControlName="price" placeholder="5000">
-                </div>
-                <div class="field">
-                    <label>Places totales</label>
-                    <input type="number" formControlName="availableSeats" placeholder="15">
-                </div>
+      <section class="form-section" aria-label="Tarification">
+        <h2 class="form-section__title">Tarification (FCFA)</h2>
+        <div class="form-grid form-grid--tarifs">
+          @if (legRows().length === 0) {
+            <div class="field">
+              <label for="price">Prix</label>
+              <input
+                id="price"
+                type="number"
+                formControlName="price"
+                placeholder="5000"
+                min="0"
+                step="1"
+                inputmode="numeric"
+              />
             </div>
+          }
 
-            <div class="form-actions">
-                <button type="submit" class="btn-save" [disabled]="tripForm.invalid">
-                    Publier le trajet maintenant
-                </button>
+          @if (needsOriginDestinationPrice()) {
+            <div class="field field--full origin-price-block">
+              <label for="odp"
+                >Prix trajet complet ({{ firstCityLabel() }} → {{ lastCityLabel() }})</label
+              >
+              <input
+                id="odp"
+                type="number"
+                formControlName="originDestinationPrice"
+                placeholder="Ex. 5000"
+                min="0"
+                step="1"
+                inputmode="numeric"
+              />
+              <span class="field-hint"
+                >Prix <strong>porte-à-porte</strong> : distinct de la somme des tronçons, pour les
+                billets « tout le trajet ».</span
+              >
             </div>
-        </form>
-    </div>
+          }
+
+          @if (legRows().length > 0) {
+            <div class="field field--full leg-fares-block">
+              <h3 class="leg-title">Tronçon par tronçon</h3>
+              <p class="leg-hint">
+                Tarif pour un trajet <em>partiel</em> sur la ligne. Somme des tronçons (aperçu) :
+                <strong>{{ legsTotal() | number: '1.0-0' }} FCFA</strong>
+                @if (needsOriginDestinationPrice()) {
+                  — le parcours <strong>complet</strong> : prix indiqué ci-dessus.
+                }
+              </p>
+              <div class="leg-table-wrap">
+                <table class="leg-table">
+                  <thead>
+                    <tr>
+                      <th>De</th>
+                      <th>Vers</th>
+                      <th>Prix</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (row of legRows(); track row.index) {
+                      <tr>
+                        <td>{{ row.fromLabel }}</td>
+                        <td>{{ row.toLabel }}</td>
+                        <td>
+                          <input
+                            class="leg-input"
+                            type="number"
+                            min="0"
+                            step="1"
+                            [value]="row.price"
+                            (input)="onLegPriceInput(row.index, $event)"
+                            inputmode="numeric"
+                            aria-label="Prix de {{ row.fromLabel }} vers {{ row.toLabel }}"
+                          />
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+
+      <section class="form-section" aria-label="Détails embarquement et véhicule">
+        <h2 class="form-section__title">Embarquement & immatriculation</h2>
+        <div class="form-grid">
+          <div class="field">
+            <label for="plate">N° de plaque</label>
+            <input
+              id="plate"
+              type="text"
+              formControlName="vehiculePlateNumber"
+              placeholder="DK-1234-A"
+              autocomplete="off"
+            />
+          </div>
+          <div class="field field--full">
+            <label for="board">Lieu d’embarquement</label>
+            <input
+              id="board"
+              type="text"
+              formControlName="boardingPoint"
+              placeholder="Gare routière, quai…"
+            />
+            <span class="field-hint"
+              >S’aligne sur la gare choisie ou le compte gare : vous pouvez le modifier.</span
+            >
+          </div>
+          <div class="field field--full field--file">
+            <span class="field-label-standalone" id="file-lbl">Photo du véhicule</span>
+            <input
+              type="file"
+              (change)="onFileSelected($event)"
+              accept="image/*"
+              class="file-input"
+              aria-labelledby="file-lbl"
+            />
+          </div>
+        </div>
+      </section>
+
+      <div class="form-actions">
+        <a class="btn-cancel" routerLink="/partenaire/trips">Annuler</a>
+        <button type="submit" class="btn-save" [disabled]="tripForm.invalid || isLoading()">
+          {{ isLoading() ? 'Publication…' : 'Publier le trajet' }}
+        </button>
+      </div>
+    </form>
+  </div>
 </div>

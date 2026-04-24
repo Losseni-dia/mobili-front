@@ -1,56 +1,67 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { switchMap, tap } from 'rxjs/operators';
 
-interface Trip {
-  id: number;
-  partnerName: string;
-  departureTime: string;
-  arrivalTime: string;
-  price: number;
-  seatsLeft: number;
-  vehicleType: string;
-}
+import { TripService, Trip } from '../../../core/services/trip/trip.service';
+import { getTripPublicListPrice } from '../../../core/utils/trip-public-list-price.util';
 
 @Component({
   selector: 'app-search-results',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './search-results.component.html',
   styleUrls: ['./search-results.component.scss'],
 })
-export class SearchResultsComponent implements OnInit {
-  private route = inject(ActivatedRoute);
+export class SearchResultsComponent {
+  private readonly route = inject(ActivatedRoute);
+  private readonly tripService = inject(TripService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  searchParams = { from: '', to: '', date: '' };
+  searchParams = { departure: '', arrival: '', date: '' };
+  trips: Trip[] = [];
+  loading = false;
+  error: string | null = null;
 
-  // Simulation de données (on connectera ton API juste après)
-  trips: Trip[] = [
-    {
-      id: 1,
-      partnerName: 'Express Dakar',
-      departureTime: '08:00',
-      arrivalTime: '12:30',
-      price: 5000,
-      seatsLeft: 12,
-      vehicleType: 'Bus',
-    },
-    {
-      id: 2,
-      partnerName: 'Baol Trans',
-      departureTime: '14:30',
-      arrivalTime: '18:45',
-      price: 4500,
-      seatsLeft: 4,
-      vehicleType: 'Minibus',
-    },
-  ];
+  listPrice = getTripPublicListPrice;
 
-  ngOnInit() {
-    this.route.queryParams.subscribe((params) => {
-      this.searchParams.from = params['from'];
-      this.searchParams.to = params['to'];
-      this.searchParams.date = params['date'];
-    });
+  constructor() {
+    this.route.queryParams
+      .pipe(
+        tap(() => {
+          this.loading = true;
+          this.error = null;
+        }),
+        switchMap((params) => {
+          const departure = String(params['departure'] ?? params['from'] ?? '').trim();
+          const arrival = String(params['arrival'] ?? params['to'] ?? '').trim();
+          const date = String(params['date'] ?? '').trim();
+          this.searchParams = { departure, arrival, date };
+          return this.tripService.searchTrips(departure, arrival, date);
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (data) => {
+          this.trips = data;
+          this.loading = false;
+        },
+        error: () => {
+          this.trips = [];
+          this.loading = false;
+          this.error = 'Impossible de charger les trajets. Réessayez plus tard.';
+        },
+      });
+  }
+
+  formatVehicleType(type: string | undefined): string {
+    if (!type) return '';
+    return type
+      .replace(/_/g, ' ')
+      .toLowerCase()
+      .split(' ')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
   }
 }

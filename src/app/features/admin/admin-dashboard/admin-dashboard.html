@@ -1,48 +1,89 @@
-<div class="dashboard-wrapper">
-    <div class="dashboard-header">
-        <h1>Reporting Global</h1>
-        <p>Statistiques et indicateurs de performance de la plateforme.</p>
+@if (isLoading()) {
+    <div class="sk-grid">
+        <div class="sk-card"></div>
+        <div class="sk-card"></div>
+        <div class="sk-card"></div>
+        <div class="sk-card"></div>
+    </div>
+} @else {
+    <div class="dash-intro">
+        <h1>Vue d’ensemble</h1>
+        <p>Indicateurs <strong>globaux</strong> (instantané). Ouvre les pages dédiées pour l’analyse d’usage (logs) ou le <strong>commerce</strong> (trajets, CA, période).</p>
     </div>
 
-    @if (isLoading()) {
-    <div class="skeleton-grid">
-        <div class="skeleton-card"></div>
-        <div class="skeleton-card"></div>
-        <div class="skeleton-card"></div>
+    <section class="kpi-grid kpi-5row">
+        <article class="kpi">
+            <header class="kpi-head">
+                <span class="kpi-chip blue">👥</span>
+            </header>
+            <div class="kpi-value">{{ stats()?.totalUsers | number }}</div>
+            <div class="kpi-label">Utilisateurs inscrits</div>
+        </article>
+        <article class="kpi">
+            <header class="kpi-head">
+                <span class="kpi-chip purple">🏢</span>
+            </header>
+            <div class="kpi-value">{{ stats()?.totalPartners | number }}</div>
+            <div class="kpi-label">Partenaires</div>
+        </article>
+        <article class="kpi">
+            <header class="kpi-head">
+                <span class="kpi-chip gold">💰</span>
+            </header>
+            <div class="kpi-value">{{ stats()?.totalRevenue | number }} <span class="kpi-suffix">FCFA</span></div>
+            <div class="kpi-label">Chiffre d’affaires (tous temps, réservations actives)</div>
+        </article>
+        <article class="kpi">
+            <header class="kpi-head">
+                <span class="kpi-chip green">🚌</span>
+            </header>
+            <div class="kpi-value">{{ stats()?.totalTrips | number }}</div>
+            <div class="kpi-label">Trajets sur la plateforme</div>
+        </article>
+        <article class="kpi">
+            <header class="kpi-head">
+                <span class="kpi-chip teal">🎫</span>
+            </header>
+            <div class="kpi-value">{{ stats()?.activeBookings | number }}</div>
+            <div class="kpi-label">Réservations (base)</div>
+        </article>
+    </section>
+
+    <h2 class="section-title">Espaces d’analyse</h2>
+    <div class="hub-grid">
+        <a routerLink="/admin/analyse-app" class="hub-card">
+            <span class="hub-ico">🔍</span>
+            <div>
+                <strong>Analyse de l’app &amp; journal</strong>
+                <span>Connexions, événements techniques, recherches sans résultat, journal détaillé, agrégations.</span>
+            </div>
+        </a>
+        <a routerLink="/admin/metier" class="hub-card">
+            <span class="hub-ico">📈</span>
+            <div>
+                <strong>Statistiques métier</strong>
+                <span>Top 10 des trajets (volume / rentabilité), période jour–semaine–mois, parts CA et parts réservations, méthodologie.</span>
+            </div>
+        </a>
     </div>
-    } @else {
-    <div class="stats-grid">
-        <div class="stat-card blue">
-            <div class="stat-icon">👥</div>
-            <div class="stat-content">
-                <span class="stat-label">Utilisateurs</span>
-                <span class="stat-value">{{ stats()?.totalUsers }}</span>
-            </div>
-        </div>
 
-        <div class="stat-card purple">
-            <div class="stat-icon">🏢</div>
-            <div class="stat-content">
-                <span class="stat-label">Partenaires</span>
-                <span class="stat-value">{{ stats()?.totalPartners }}</span>
-            </div>
+    <h2 class="section-title">Gestion</h2>
+    <section class="panel">
+        <div class="shortcuts">
+            <a routerLink="/admin/users" class="shortcut">
+                <span class="sc-ico blue">👥</span>
+                <div>
+                    <strong>Utilisateurs</strong>
+                    <span>Comptes, rôles, statuts.</span>
+                </div>
+            </a>
+            <a routerLink="/admin/partners" class="shortcut">
+                <span class="sc-ico purple">🏢</span>
+                <div>
+                    <strong>Partenaires</strong>
+                    <span>Compagnies et autorisations.</span>
+                </div>
+            </a>
         </div>
-
-        <div class="stat-card green">
-            <div class="stat-icon">💰</div>
-            <div class="stat-content">
-                <span class="stat-label">Chiffre d'Affaires</span>
-                <span class="stat-value">{{ stats()?.totalRevenue | number }} FCFA</span>
-            </div>
-        </div>
-
-        <div class="stat-card orange">
-            <div class="stat-icon">🚌</div>
-            <div class="stat-content">
-                <span class="stat-label">Trajets Publiés</span>
-                <span class="stat-value">{{ stats()?.totalTrips }}</span>
-            </div>
-        </div>
-    </div>
-    }
-</div>
+    </section>
+}

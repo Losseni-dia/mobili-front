@@ -20,6 +20,11 @@ export class PartnerEditComponent implements OnInit {
   isLoading = signal(false);
   partnerId = signal<number | null>(null);
   logoPreview = signal<string | null>(null);
+  /** Code partenaire (inscription gare) — lecture seule, renvoyé par l’API. */
+  registrationCode = signal<string | null>(null);
+  /** Fin du chargement GET /my-company (succès ou erreur). */
+  loadComplete = signal(false);
+  copyFeedback = signal(false);
   selectedFile: File | null = null;
 
   // Formulaire réactif
@@ -34,6 +39,15 @@ export class PartnerEditComponent implements OnInit {
 
   onCancel() {
     this.location.back();
+  }
+
+  copyRegistrationCode() {
+    const code = this.registrationCode();
+    if (!code) return;
+    void navigator.clipboard.writeText(code).then(() => {
+      this.copyFeedback.set(true);
+      setTimeout(() => this.copyFeedback.set(false), 2000);
+    });
   }
 
   ngOnInit() {
@@ -60,7 +74,12 @@ export class PartnerEditComponent implements OnInit {
          this.logoPreview.set(`${this.partenaireService.IMAGE_BASE_URL}${partner.logoUrl}`);
         }
 
+        this.registrationCode.set(
+          partner.registrationCode?.trim() ? partner.registrationCode.trim() : null,
+        );
+
         this.isLoading.set(false);
+        this.loadComplete.set(true);
 
         // Log pour vérifier si le formulaire est valide après le remplissage
         console.log('Formulaire valide ?', this.partnerForm.valid);
@@ -71,6 +90,7 @@ export class PartnerEditComponent implements OnInit {
       error: (err) => {
         console.error('Erreur chargement partenaire', err);
         this.isLoading.set(false);
+        this.loadComplete.set(true);
       },
     });
   }

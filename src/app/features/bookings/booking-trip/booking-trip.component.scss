@@ -14,6 +14,100 @@ $mobili-gray: #a0aec0;
   background: $mobili-light-bg;
   border-radius: 30px;
 
+  // Bloc de choix du segment (embarquement / descente)
+  .segment-picker {
+    margin-bottom: 24px;
+    padding: 20px;
+    background: rgba($mobili-blue, 0.04);
+    border-radius: 16px;
+    border: 1px solid rgba($mobili-blue, 0.08);
+
+    .segment-hint {
+      margin: 0 0 14px;
+      color: $mobili-dark;
+      font-size: 0.92rem;
+    }
+
+    .segment-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .segment-field {
+      display: flex;
+      flex-direction: column;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: $mobili-dark;
+
+      span { margin-bottom: 6px; }
+
+      select {
+        padding: 10px 12px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        background: white;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: $mobili-dark;
+
+        &:focus {
+          outline: none;
+          border-color: $mobili-blue;
+          box-shadow: 0 0 0 3px rgba($mobili-blue, 0.1);
+        }
+      }
+    }
+
+    .fares-details {
+      margin: 8px 0 12px;
+      summary {
+        cursor: pointer;
+        font-weight: 700;
+        color: $mobili-blue;
+        font-size: 0.9rem;
+      }
+      .fares-list {
+        list-style: none;
+        padding: 10px 0 0;
+        margin: 0;
+        font-size: 0.9rem;
+        li {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 4px 0;
+          border-bottom: 1px dashed #e2e8f0;
+          .fare-price {
+            margin-left: auto;
+            font-weight: 700;
+            color: $mobili-blue;
+          }
+        }
+      }
+    }
+
+    .segment-price {
+      margin-top: 6px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: $mobili-yellow;
+      color: $mobili-blue;
+      font-weight: 800;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .warn {
+        color: #b45309;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+    }
+  }
+
   // Section Gauche : Le Bus (La Structure)
   .seat-selection {
     flex: 1.2;

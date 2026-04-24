@@ -1,8 +1,13 @@
 <div class="scanner-page">
     <div class="scanner-header">
-        <button class="btn-back" routerLink="/">✕</button>
-        <h1>Scanner Embarquement</h1>
-        <p>Chauffeur : <strong>NANA VOYAGE</strong></p>
+        <a class="btn-back" routerLink="/gare/accueil" title="Retour à l'accueil gare">✕</a>
+        <h1>Scanner embarquement</h1>
+        <p class="who">
+            <span>{{ auth.currentUser()?.firstname }} {{ auth.currentUser()?.lastname }}</span>
+            @if (auth.currentUser()?.stationName) {
+                <span class="station">· {{ auth.currentUser()?.stationName }}</span>
+            }
+        </p>
     </div>
 
     <div class="camera-container">

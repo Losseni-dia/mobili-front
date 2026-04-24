@@ -1,54 +1,68 @@
-<div class="admin-card">
-    <div class="card-header">
-        <h2>👥 Gestion des Utilisateurs</h2>
-        <p>Gérez les accès et les rôles des membres de la plateforme.</p>
-    </div>
+<section class="data-panel">
+    <header class="panel-head">
+        <div>
+            <h2>Tous les utilisateurs</h2>
+            <p>Liste complète des comptes Mobili (voyageurs, partenaires, chauffeurs).</p>
+        </div>
+        <span class="count-chip">{{ users().length }} comptes</span>
+    </header>
 
     @if (isLoading()) {
-    <div class="loader">Chargement des utilisateurs...</div>
+        <div class="loader">Chargement des utilisateurs…</div>
     } @else {
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Utilisateur</th>
-                    <th>Email</th>
-                    <th>Rôles</th>
-                    <th>Statut</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @for (user of users(); track user.id) {
-                <tr>
-                <td class="user-name">
-                    <div>{{ user.firstname }} {{ user.lastname }}</div>
-                    @if (user.partnerName) {
-                    <span class="partner-tag">🏢 {{ user.partnerName }}</span>
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Utilisateur</th>
+                        <th>Email</th>
+                        <th>Rôles</th>
+                        <th>Statut</th>
+                        <th class="right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (user of users(); track user.id) {
+                        <tr>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="avatar">{{ user.firstname?.[0] }}{{ user.lastname?.[0] }}</div>
+                                    <div class="user-meta">
+                                        <strong>{{ user.firstname }} {{ user.lastname }}</strong>
+                                        @if (user.partnerName) {
+                                            <span class="partner-tag">🏢 {{ user.partnerName }}</span>
+                                        }
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="mono">{{ user.email }}</td>
+                            <td>
+                                <div class="roles">
+                                    @for (role of user.roles; track role) {
+                                        <span class="role-pill">{{ role.replace('ROLE_', '') }}</span>
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                <span class="status-pill" [class.active]="user.enabled" [class.blocked]="!user.enabled">
+                                    <span class="dot"></span>
+                                    {{ user.enabled ? 'Actif' : 'Banni' }}
+                                </span>
+                            </td>
+                            <td class="right">
+                                <button
+                                    class="row-btn"
+                                    [class.danger]="user.enabled"
+                                    [class.success]="!user.enabled"
+                                    (click)="updateStatus(user)"
+                                >
+                                    {{ user.enabled ? 'Bannir' : 'Réactiver' }}
+                                </button>
+                            </td>
+                        </tr>
                     }
-                </td>
-                    <td>{{ user.email }}</td>
-                    <td>
-                        <div class="role-container">
-                            @for (role of user.roles; track role) {
-                            <span class="role-badge">{{ role.replace('ROLE_', '') }}</span>
-                            }
-                        </div>
-                    </td>
-                    <td>
-                        <span [class]="user.enabled ? 'status-active' : 'status-blocked'">
-                            {{ user.enabled ? 'Actif' : 'Banni' }}
-                        </span>
-                    </td>
-                    <td>
-                        <button (click)="updateStatus(user)" [class]="user.enabled ? 'btn-ban' : 'btn-activate'">
-                            {{ user.enabled ? 'Bannir' : 'Réactiver' }}
-                        </button>
-                    </td>
-                </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+                </tbody>
+            </table>
+        </div>
     }
-</div>
+</section>

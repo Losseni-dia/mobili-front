@@ -43,6 +43,7 @@
             <div class="form-group">
                 <label for="boardingPoint">Point d'embarquement</label>
                 <input id="boardingPoint" type="text" formControlName="boardingPoint" placeholder="Ex: Gare de Bassam">
+                <small>Compte gare : vous pouvez aligner le libellé sur le nom de votre gare.</small>
             </div>
 
             <div class="form-group">
@@ -63,10 +64,12 @@
                 </select>
             </div>
 
+            @if (legRows().length === 0) {
             <div class="form-group">
                 <label for="price">Prix (FCFA)</label>
-                <input id="price" type="number" formControlName="price">
+                <input id="price" type="number" formControlName="price" min="0" step="1">
             </div>
+            }
 
             <div class="form-group">
                 <label for="availableSeats">Places disponibles</label>
@@ -75,9 +78,67 @@
         </div>
 
         <div class="form-group full-width">
-            <label for="stops">Villes étapes ou infos (optionnel)</label>
-            <textarea id="stops" formControlName="stops" rows="3" placeholder="Ex: Escale à Yamoussoukro..."></textarea>
+            <label for="stops">Villes traversées (escales, séparées par des virgules)</label>
+            <textarea id="stops" formControlName="stops" rows="3" placeholder="Ex : Yamoussoukro, Bouaflé, Daloa"></textarea>
         </div>
+
+        @if (needsOriginDestinationPrice()) {
+            <div class="form-group full-width origin-price-block">
+                <label
+                    for="odPrice"
+                >Prix trajet complet ({{ firstCityLabel() }} → {{ lastCityLabel() }}) (FCFA)</label>
+                <input
+                    id="odPrice"
+                    type="number"
+                    formControlName="originDestinationPrice"
+                    min="0"
+                    step="1"
+                />
+                <small>
+                    Tarif direct premier → dernier arrêt, <strong>indépendant</strong> de la somme des tronçons
+                    (portions) ci-dessous.
+                </small>
+            </div>
+        }
+
+        @if (legRows().length > 0) {
+            <div class="form-group full-width leg-fares-block">
+                <h3 class="leg-title">Prix de chaque tronçon (portions)</h3>
+                <p class="leg-hint">
+                    Sert aux trajets <em>partiels</em> sur la ligne. Somme de ces tronçons (aperçu) :
+                    <strong>{{ legsTotal() | number: '1.0-0' }} FCFA</strong>
+                    @if (needsOriginDestinationPrice()) { — trajet
+                    <strong>complet</strong> : prix indiqué ci-dessus. }
+                </p>
+                <table class="leg-table">
+                    <thead>
+                        <tr>
+                            <th>De</th>
+                            <th>Vers</th>
+                            <th>Prix (FCFA)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (row of legRows(); track row.index) {
+                            <tr>
+                                <td>{{ row.fromLabel }}</td>
+                                <td>{{ row.toLabel }}</td>
+                                <td>
+                                    <input
+                                        class="leg-input"
+                                        type="number"
+                                        min="0"
+                                        step="1"
+                                        [value]="row.price"
+                                        (input)="onLegPriceInput(row.index, $event)"
+                                    />
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
 
         <div class="form-actions">
             <button type="button" class="btn-secondary" routerLink="/partenaire/trips">

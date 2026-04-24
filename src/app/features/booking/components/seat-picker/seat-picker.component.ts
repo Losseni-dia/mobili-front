@@ -28,20 +28,23 @@ export class SeatPickerComponent implements OnChanges {
     if (changes['totalSeats']) {
       const val = changes['totalSeats'].currentValue;
       if (val && val > 0) {
+        // Génère la liste réelle des sièges (ex: de 1 à 70)
         const seats = Array.from({ length: val }, (_, i) => (i + 1).toString());
         this.seatListSignal.set(seats);
-        this.selectedSeats.set([]); // Reset si on change de bus
+        this.selectedSeats.set([]); // Reset de la sélection si le trajet change
       }
     }
   }
 
   onSeatClick(seatId: string) {
+    // Bloque le clic si le siège est déjà réservé ou bloqué (gare)
     if (this.occupiedSeats.includes(seatId)) return;
 
     this.selectedSeats.update((current) => {
       const updated = current.includes(seatId)
         ? current.filter((s) => s !== seatId)
         : [...current, seatId];
+
       this.seatToggle.emit(updated);
       return updated;
     });

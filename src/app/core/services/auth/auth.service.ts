@@ -1,6 +1,6 @@
 import { inject, Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap, switchMap, of } from 'rxjs';
+import { Observable, tap, switchMap, map, of, throwError } from 'rxjs';
 
 export interface AuthResponse {
   token: string;
@@ -12,6 +12,14 @@ export interface AuthResponse {
   avatarUrl: string; // Aligné avec ProfileDTO Java
   roles: string[];
   partnerId?: number;
+  /** Compte responsable gare */
+  stationId?: number;
+  stationName?: string;
+  /**
+   * Rôle GARE : la gare est validée par le dirigeant (booléen côté API) et active.
+   * Faux = aucune action trajet / scanner jusqu’à validation.
+   */
+  gareOperationsEnabled?: boolean | null;
 }
 
 export interface UserAdmin {
@@ -22,6 +30,40 @@ export interface UserAdmin {
   roles: any[]; // On peut mettre string[] ou any[] selon si le backend envoie des objets Role ou juste des noms
   enabled: boolean;
 }
+
+type RoleLike = string | { name?: string };
+
+export interface GarePreviewStation {
+  id: number;
+  name: string;
+  city: string;
+}
+
+export interface GarePreviewResponse {
+  partnerName: string;
+  partnerId: number;
+  stations: GarePreviewStation[];
+}
+
+export interface GareSelfRegisterRequest {
+  partnerCode: string;
+  stationId?: number | null;
+  newStationName?: string;
+  newStationCity?: string;
+  login: string;
+  email: string;
+  password: string;
+  firstname: string;
+  lastname: string;
+}
+
+/** Corps minimal renvoyé par l’API à l’inscription (aligné sur login). */
+type BackendAuthResponse = { token: string; login: string; userId: number; id?: number };
+
+/** Résultat d’inscription gare (compte actif connecté, ou inactif en attente du partenaire). */
+export type GareRegisterOutcome =
+  | { status: 'activated'; user: AuthResponse }
+  | { status: 'awaiting_approval'; login: string; userId: number };
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -45,7 +87,6 @@ export class AuthService {
         // Crucial : On garde le token du login original car le /me ne le renvoie pas
         const updatedUser = { ...fullProfile, token: currentData?.token || '' };
 
-        console.log('Profil synchronisé avec succès :', updatedUser);
         this.saveUser(updatedUser);
       }),
     );
@@ -72,7 +113,13 @@ export class AuthService {
 
   private getUserFromStorage(): AuthResponse | null {
     const data = localStorage.getItem('mobili_user');
-    return data ? JSON.parse(data) : null;
+    if (!data) return null;
+    try {
+      return JSON.parse(data) as AuthResponse;
+    } catch {
+      localStorage.removeItem('mobili_user');
+      return null;
+    }
   }
 
   register(user: any, avatar?: File): Observable<any> {
@@ -84,6 +131,54 @@ export class AuthService {
     return this.http.post('/auth/register', formData);
   }
 
+  /** Aperçu compagnie + gares pour auto-inscription responsable (code partenaire). */
+  previewGareRegistration(code: string): Observable<GarePreviewResponse> {
+    const q = encodeURIComponent(code.trim().toUpperCase());
+    return this.http.get<GarePreviewResponse>(`/auth/registration/gare/preview?code=${q}`);
+  }
+
+  /**
+   * Inscription gare : compte actif (connexion) ou
+   * `awaiting_approval` si le partenaire doit valider la gare (compte inactif, pas de token).
+   */
+  registerGare(req: GareSelfRegisterRequest): Observable<GareRegisterOutcome> {
+    return this.http
+      .post<{
+        token: string | null;
+        login: string;
+        userId: number;
+        id?: number;
+        accountPending?: boolean | null;
+      }>('/auth/registration/gare', req)
+      .pipe(
+        switchMap((r) => {
+          const id = (r as { id?: number }).id ?? r.userId;
+          if (r.accountPending) {
+            return of({ status: 'awaiting_approval' as const, login: r.login, userId: id });
+          }
+          if (r.token == null || id == null) {
+            return throwError(
+              () => new Error("Réponse d'inscription gare inattendue (token ou identifiant manquant)."),
+            );
+          }
+          const base: AuthResponse = {
+            token: r.token,
+            login: r.login,
+            id,
+            firstname: '',
+            lastname: '',
+            email: '',
+            avatarUrl: '',
+            roles: [],
+          };
+          this.saveUser(base);
+          return this.fetchUserProfile().pipe(
+            map((u) => ({ status: 'activated' as const, user: u })),
+          );
+        }),
+      );
+  }
+
   // Dans auth.service.ts
 
   // auth.service.ts
@@ -92,11 +187,13 @@ export class AuthService {
     const user = this.currentUser();
     if (!user || !user.roles) return false;
 
-    // On nettoie le nom demandé pour enlever "ROLE_" s'il est présent
-    const cleanRoleName = roleName.replace('ROLE_', '');
-
-    // On vérifie si le tableau contient soit "PARTNER", soit "ROLE_PARTNER"
-    return user.roles.some((role) => role === cleanRoleName || role === `ROLE_${cleanRoleName}`);
+    const cleanRoleName = roleName.replace(/^ROLE_/, '').toUpperCase();
+    const accepted = new Set([cleanRoleName, `ROLE_${cleanRoleName}`]);
+    return (user.roles as RoleLike[]).some((role) => {
+      const roleValue = typeof role === 'string' ? role : role?.name;
+      if (!roleValue) return false;
+      return accepted.has(roleValue.toUpperCase());
+    });
   }
 
   /**
